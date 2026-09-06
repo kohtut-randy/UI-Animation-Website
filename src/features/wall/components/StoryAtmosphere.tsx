@@ -381,38 +381,107 @@ export const StoryAtmosphere = ({ effect }: StoryAtmosphereProps) => {
           drawArrow(context, x, y, angle, arrowLength, alpha)
         }
 
+        // ENHANCED WAVING BANNERS
         for (let index = 0; index < BATTLE_BANNER_COUNT; index += 1) {
           const bannerX = width * (0.62 + index * 0.15)
           const bannerTop = height * (0.1 + (index % 2) * 0.08)
           const bannerHeight = height * (0.3 + (index % 2) * 0.08)
-          const wind = Math.sin(time * 0.75 + index * 1.8) * width * 0.025
+          const bannerWidth = width * 0.14
+
+          // Waving flag with sine wave
+          const waveSpeed = 1.2 + index * 0.3
+          const waveAmplitude = width * (0.025 + index * 0.008)
+          const waveOffset = index * 0.8 + progress * 0.5
+
+          // Draw pole
           context.strokeStyle = 'rgba(12, 9, 12, 0.78)'
           context.lineWidth = 3
           context.beginPath()
           context.moveTo(bannerX, bannerTop - height * 0.08)
-          context.lineTo(bannerX + wind * 0.35, bannerTop + bannerHeight)
+          context.lineTo(bannerX + Math.sin(time * 0.3 + index) * 2, bannerTop + bannerHeight)
           context.stroke()
-          context.fillStyle = 'rgba(132, 24, 32, 0.48)'
+
+          // Draw flag with wave
           context.beginPath()
           context.moveTo(bannerX + 2, bannerTop)
-          context.lineTo(bannerX + width * 0.14 + wind, bannerTop + height * 0.025)
-          context.lineTo(bannerX + width * 0.11 + wind * 0.8, bannerTop + bannerHeight * 0.72)
-          context.lineTo(bannerX + width * 0.025, bannerTop + bannerHeight * 0.58)
+
+          // Top edge - waving
+          const steps = 20
+          for (let step = 0; step <= steps; step += 1) {
+            const t = step / steps
+            const x = bannerX + 2 + t * bannerWidth
+            const wave = Math.sin(time * waveSpeed + t * 8 + waveOffset) * waveAmplitude * (1 - t * 0.3)
+            const y = bannerTop + t * bannerHeight * 0.25 + wave * 0.2
+            context.lineTo(x, y)
+          }
+
+          // Right edge
+          const rightWave = Math.sin(time * waveSpeed + 1 + waveOffset) * waveAmplitude * 0.7
+          context.lineTo(
+            bannerX + bannerWidth + rightWave,
+            bannerTop + bannerHeight * 0.4 + Math.sin(time * waveSpeed * 0.8 + 2 + waveOffset) * waveAmplitude * 0.3,
+          )
+
+          // Bottom edge - waving
+          for (let step = steps; step >= 0; step -= 1) {
+            const t = step / steps
+            const x = bannerX + 2 + t * bannerWidth
+            const wave = Math.sin(time * waveSpeed + t * 8 + waveOffset + 1.2) * waveAmplitude * (1 - t * 0.3) * 0.9
+            const y = bannerTop + bannerHeight * 0.72 + t * bannerHeight * 0.28 + wave * 0.15
+            context.lineTo(x, y)
+          }
+
           context.closePath()
+
+          // Flag fill with gradient
+          const flagGradient = context.createLinearGradient(bannerX, bannerTop, bannerX + bannerWidth, bannerTop + bannerHeight)
+          const baseAlpha = 0.48 + Math.sin(time * 0.5 + index) * 0.08
+          flagGradient.addColorStop(0, `rgba(132, 24, 32, ${baseAlpha})`)
+          flagGradient.addColorStop(0.5, `rgba(180, 40, 50, ${baseAlpha * 1.1})`)
+          flagGradient.addColorStop(1, `rgba(80, 12, 18, ${baseAlpha * 0.8})`)
+          context.fillStyle = flagGradient
           context.fill()
-          context.strokeStyle = 'rgba(218, 79, 64, 0.62)'
+
+          // Flag border - follow wave
+          context.strokeStyle = `rgba(218, 79, 64, ${0.62 + Math.sin(time * 0.7 + index) * 0.08})`
           context.lineWidth = 1.5
           context.beginPath()
           context.moveTo(bannerX + 2, bannerTop)
-          context.lineTo(bannerX + width * 0.14 + wind, bannerTop + height * 0.025)
-          context.lineTo(bannerX + width * 0.11 + wind * 0.8, bannerTop + bannerHeight * 0.72)
+          for (let step = 0; step <= steps; step += 1) {
+            const t = step / steps
+            const x = bannerX + 2 + t * bannerWidth
+            const wave = Math.sin(time * waveSpeed + t * 8 + waveOffset) * waveAmplitude * (1 - t * 0.3)
+            const y = bannerTop + t * bannerHeight * 0.25 + wave * 0.2
+            context.lineTo(x, y)
+          }
           context.stroke()
+
+          // Japanese character with wave offset
           context.save()
-          context.fillStyle = 'rgba(255, 223, 173, 0.88)'
+          context.fillStyle = `rgba(255, 223, 173, ${0.88 + Math.sin(time * 0.6 + index * 0.5) * 0.08})`
           context.font = `${Math.round(bannerHeight * 0.3)}px "Noto Serif JP", serif`
           context.textAlign = 'center'
           context.textBaseline = 'middle'
-          context.fillText('戦', bannerX + width * 0.07 + wind * 0.5, bannerTop + bannerHeight * 0.34)
+
+          const charX = bannerX + bannerWidth * 0.5 + Math.sin(time * waveSpeed + 0.5 + waveOffset) * waveAmplitude * 0.3
+          const charY = bannerTop + bannerHeight * 0.42 + Math.sin(time * waveSpeed * 0.9 + 0.3 + waveOffset) * waveAmplitude * 0.15
+          context.fillText('戦', charX, charY)
+          context.restore()
+
+          // Flag edge detail - flowing fabric look
+          context.save()
+          context.globalAlpha = 0.15
+          for (let fringe = 0; fringe < 5; fringe += 1) {
+            const t = (fringe + 1) / 6
+            const x = bannerX + bannerWidth * t + Math.sin(time * waveSpeed + t * 8 + waveOffset + 0.5) * waveAmplitude * 0.6
+            const y = bannerTop + bannerHeight * 0.75 + Math.sin(time * waveSpeed * 0.8 + t * 6 + waveOffset + 0.8) * waveAmplitude * 0.15
+            context.beginPath()
+            context.moveTo(x, y)
+            context.lineTo(x + 4 + Math.sin(time * 1.2 + fringe) * 3, y + 8 + Math.sin(time * 0.9 + fringe * 0.5) * 4)
+            context.strokeStyle = 'rgba(200, 180, 160, 0.3)'
+            context.lineWidth = 1
+            context.stroke()
+          }
           context.restore()
         }
 
