@@ -22,7 +22,6 @@ export const DURATION_LG = 0.8
 export const DURATION_XL = 1.2
 export const DURATION_XXL = 1.6
 export const DURATION_CURTAIN = 0.9
-export const HERO_STORY_SCROLL_DURATION = 10
 export const DURATION_CLOUD_DRIFT = 18
 export const DURATION_STAR_TWINKLE = 2.8
 

@@ -9,7 +9,6 @@ import {
   DURATION_MD,
   DURATION_SM,
   DURATION_XL,
-  HERO_STORY_SCROLL_DURATION,
   EASE_LINEAR,
   EASE_OUT_QUINT,
   EASE_OUT_STRONG,
@@ -27,7 +26,6 @@ import {
 import { onAppPhase } from 'features/preloader'
 import { gsap, useGSAP } from 'motion/gsapClient'
 import { addMotionMedia, motionMedia } from 'motion/motionMedia'
-import { getLenis } from 'motion/smoothScroll'
 
 const SELECTOR = {
   eyebrow: '[data-hero-eyebrow]',
@@ -40,19 +38,6 @@ const SELECTOR = {
   mist: '[data-hero-mist]',
   foreground: '[data-hero-foreground]',
 } as const
-
-const advanceToStory = (): void => {
-  const story = document.querySelector<HTMLElement>('#story')
-  if (!story) return
-
-  const lenis = getLenis()
-  if (lenis) {
-    lenis.scrollTo(story, { duration: HERO_STORY_SCROLL_DURATION })
-    return
-  }
-
-  story.scrollIntoView({ behavior: 'smooth', block: 'start' })
-}
 
 export const useHeroMotion = (): RefObject<HTMLElement | null> => {
   const scope = useRef<HTMLElement>(null)
@@ -79,12 +64,11 @@ export const useHeroMotion = (): RefObject<HTMLElement | null> => {
             duration: REDUCED_MOTION_DURATION,
             ease: REDUCED_MOTION_EASE,
             stagger: REDUCED_MOTION_STAGGER,
-            onComplete: advanceToStory,
           })
           return
         }
 
-        const entrance = gsap.timeline({ paused: true, onComplete: advanceToStory })
+        const entrance = gsap.timeline({ paused: true })
         if (image)
           entrance.fromTo(
             image,
