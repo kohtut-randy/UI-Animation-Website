@@ -1,23 +1,23 @@
 export const KineticBridge = () => (
-  <section data-kinetic className='relative h-[210svh] bg-[#08090c] text-chalk-100'>
+  <section data-kinetic className='relative h-[200svh] bg-[#08090c] text-chalk-100'>
     <div className='sticky top-0 flex h-svh flex-col justify-center overflow-hidden'>
-      <p className='eyebrow gutter mb-7 text-eyebrow text-jug-400'>The last ember</p>
-      <div className='border-y border-chalk-100/15 py-4 md:py-6'>
+      <p className='eyebrow gutter mb-3 text-eyebrow text-jug-400'>The last ember</p>
+      <div className='border-y border-chalk-100/15 py-1 md:py-2'>
         <p
           data-kinetic-row='left'
-          className='whitespace-nowrap font-display text-[clamp(4.5rem,14vh,18rem)] font-extrabold leading-[0.76] tracking-[-0.075em] md:text-[clamp(6rem,18vw,18rem)]'
+          className='whitespace-nowrap font-display text-[clamp(5rem,16vh,10rem)] font-extrabold leading-[0.82] tracking-[-0.075em] md:text-[clamp(6rem,10vw,11rem)]'
         >
           CARRIES CARRIES CARRIES
         </p>
         <p
           data-kinetic-row='right'
-          className='whitespace-nowrap font-display text-[clamp(4.5rem,14vh,18rem)] font-extrabold leading-[0.76] tracking-[-0.075em] text-transparent [-webkit-text-stroke:1px_rgba(245,241,232,0.72)] md:text-[clamp(6rem,18vw,18rem)]'
+          className='whitespace-nowrap font-display text-[clamp(5rem,16vh,10rem)] font-extrabold leading-[0.82] tracking-[-0.075em] text-transparent [-webkit-text-stroke:1px_rgba(245,241,232,0.72)] md:text-[clamp(6rem,10vw,11rem)]'
         >
           THE WAY THE WAY THE WAY
         </p>
         <p
           data-kinetic-row='left'
-          className='whitespace-nowrap font-display text-[clamp(4.5rem,14vh,18rem)] font-extrabold leading-[0.76] tracking-[-0.075em] md:text-[clamp(6rem,18vw,18rem)]'
+          className='whitespace-nowrap font-display text-[clamp(5rem,16vh,10rem)] font-extrabold leading-[0.82] tracking-[-0.075em] md:text-[clamp(6rem,10vw,11rem)]'
         >
           HOME HOME HOME HOME
         </p>

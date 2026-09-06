@@ -20,12 +20,12 @@ export const App = () => (
         <RevealProvider>
           {/* Visible only on focus. The first section is animation-heavy and the header
               nav sits above it, so a keyboard visitor gets a way past both. */}
-          <a
+          {/* <a
             href='#main'
             className='sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:top-4 focus-visible:left-4 focus-visible:z-50 focus-visible:rounded-pill focus-visible:bg-brand focus-visible:px-5 focus-visible:py-2.5 focus-visible:text-brand-ink'
           >
             Skip to content
-          </a>
+          </a> */}
           <main id='main'>
             <Hero />
             <Wall />

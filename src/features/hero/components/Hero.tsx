@@ -10,8 +10,8 @@ export const Hero = () => {
   const scope = useHeroMotion()
 
   return (
-    <section ref={scope} id='hero' className='relative h-[190svh] bg-granite-950 text-chalk-100'>
-      <div className='sticky top-0 isolate h-svh overflow-hidden'>
+    <section ref={scope} id='hero' className='relative h-[190svh] h-[190dvh] bg-granite-950 text-chalk-100'>
+      <div className='sticky top-0 isolate h-svh h-dvh min-h-[640px] overflow-hidden'>
         <Header />
 
         <div data-hero-scene aria-hidden='true' className='absolute inset-[-8%] -z-20'>
@@ -22,7 +22,7 @@ export const Hero = () => {
             width={1672}
             height={941}
             fetchPriority='high'
-            className='size-full object-cover object-[78%_center] md:object-[76%_center] lg:object-center'
+            className='size-full object-cover object-[78%_center] md:object-[76%_center] xl:object-center'
           />
         </div>
         <div
