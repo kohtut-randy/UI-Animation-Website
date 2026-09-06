@@ -1,0 +1,36 @@
+/* Self-hosted variable fonts, latin subset only.
+
+   The @font-face rules are hand-authored rather than imported from
+   @fontsource-variable/*.css because those ship every subset (cyrillic, greek,
+   vietnamese) at font-display: swap, and the display face needs `block`: a swapped
+   fallback would reflow the kinetic headline mid-entrance, which is exactly the layout
+   shift the preloader exists to prevent. Body text keeps `swap`, where a fallback flash
+   is cheaper than invisible text.
+
+   The two files are vendored into public/fonts/ from the @fontsource-variable packages
+   (still a devDependency, so the provenance and the update path stay obvious) rather
+   than imported through the bundler. That buys a stable URL, which is what lets
+   index.html preload the display face on the first paint and lets the boot asset
+   manifest name the exact face to await. */
+
+@font-face {
+  font-family: 'Bricolage Grotesque Variable';
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: block;
+  src: url('/fonts/bricolage-grotesque-latin-variable.woff2') format('woff2-variations');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122,
+    U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Inter Variable';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-latin-variable.woff2') format('woff2-variations');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122,
+    U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}

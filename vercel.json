@@ -1,0 +1,37 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "rewrites": [
+    {
+      "source": "/((?!assets/|fonts/|favicon.svg|robots.txt|wall-texture.webp|ronin-sword-hero.jpg|ember-village.jpg|ember-storm.jpg|ember-river.jpg|ember-dawn.jpg|oath-gate.json).*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/assets/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+    },
+    {
+      "source": "/fonts/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000" }]
+    },
+    {
+      "source": "/wall-texture.webp",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000" }]
+    },
+    {
+      "source": "/ronin-sword-hero.jpg",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000" }]
+    },
+    {
+      "source": "/ember-(.*).jpg",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000" }]
+    },
+    {
+      "source": "/oath-gate.json",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000" }]
+    }
+  ]
+}

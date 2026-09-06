@@ -1,0 +1,21 @@
+/* v4 `@utility` replaces `@apply`: these compile to real utilities that
+   participate in the cascade and in variant stacking (`md:gutter`),
+   which `@apply` copies cannot. */
+@utility gutter {
+  padding-inline: var(--space-gutter);
+}
+@utility section-y {
+  padding-block: var(--space-section);
+}
+@utility page {
+  margin-inline: auto;
+  width: 100%;
+  max-width: var(--container-page);
+}
+@utility eyebrow {
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+}
+@utility nums {
+  font-variant-numeric: tabular-nums; /* perf: kills per-frame counter reflow */
+}

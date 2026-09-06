@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CRUX motion probe</title>
+  </head>
+  <body>
+    <!--
+      Dev-only harness, same arrangement as tokens.html. It exists to prove one
+      assumption the whole animation plan rests on: that a cleanup function returned
+      from `useGSAP` actually runs, so `return () => media.revert()` really does kill
+      pins and remove pin-spacers. Cheaper to discover here than inside the pinned
+      wall section.
+    -->
+    <div id="motion-probe"></div>
+    <script type="module" src="/src/dev/motionMain.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,6 @@
+@import './crux.css';
+
+/* Tailwind v4 scans the source TREE, not the module graph, so the dev-only token proof
+   sheet would otherwise ship its utilities in the production stylesheet (measured:
+   16.6 kB to 23.4 kB). It has its own entry and never reaches the production bundle. */
+@source not '../dev';

@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Last Ember | An Original Scroll Tale</title>
+    <meta name="description" content="An original cinematic samurai tale told through motion and scroll." />
+    <meta name="theme-color" content="#0a0d13" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <!--
+      The display face is preloaded because it is the only font the preloader itself
+      renders, and it is declared `font-display: block`. Without the preload the
+      wordmark would be invisible until the stylesheet resolved the face, which is
+      exactly the blank first paint the preloader exists to avoid. Body text is not
+      preloaded: it is behind the curtain and declared `swap`.
+    -->
+    <link rel="preload" href="/fonts/bricolage-grotesque-latin-variable.woff2" as="font" type="font/woff2" crossorigin />
+
+    <!--
+      EVERYTHING BELOW PAINTS ON THE FIRST PAINT, before the module bundle is even
+      requested. That is what makes the brief's slow-asset edge case genuinely covered
+      rather than merely claimed, and it makes the LCP element the inline wordmark,
+      which is why shipping a preloader does not cost a Lighthouse score.
+
+      All colours here are the hex twins of the oklch brand tokens (granite-950
+      #0a0d13, chalk-100 #f7f5ec, jug-500 #fb9b00, granite-600 #5c6169), read straight
+      off a canvas rather than eyeballed. They have to match to the byte, because the
+      curtain lifts off the real page background and any drift shows as a flash.
+    -->
+    <style>
+      #loader {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        background: #0a0d13;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        /* Promote once, up front. The curtain is the one element in the build whose
+           layer is created before any measurement happens, so it cannot thrash. */
+        transform: translate3d(0, 0, 0);
+        transition: transform 1100ms cubic-bezier(0.76, 0, 0.24, 1);
+      }
+      /* The lift is a transform, never `top` or `height`: those would relayout the
+         whole page mid-curtain, on the one frame that can least afford it. */
+      #loader[data-out='true'] {
+        transform: translate3d(0, -101%, 0);
+      }
+
+      #loader-inner {
+        position: relative;
+        display: grid;
+        gap: 1rem;
+        justify-items: center;
+        width: min(86vw, 48rem);
+        z-index: 1;
+        transition:
+          transform 500ms cubic-bezier(0.33, 1, 0.68, 1),
+          opacity 500ms linear;
+      }
+      #loader[data-out='true'] #loader-inner {
+        transform: scale(1.06);
+        opacity: 0;
+      }
+
+      #loader-mark {
+        display: flex;
+        gap: 0.06em;
+        overflow: hidden;
+        font-family: 'Bricolage Grotesque Variable', 'Arial Black', system-ui, sans-serif;
+        font-weight: 800;
+        font-size: clamp(4.5rem, 15vw, 9rem);
+        line-height: 0.86;
+        letter-spacing: -0.04em;
+        color: #f7f5ec;
+      }
+
+      #loader-kicker {
+        font-family: ui-monospace, 'SFMono-Regular', monospace;
+        font-size: 0.6875rem;
+        letter-spacing: 0.55em;
+        text-transform: uppercase;
+        color: #fb9b00;
+      }
+
+      #loader-canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.9;
+      }
+
+      #loader-forge {
+        display: block;
+        width: 100%;
+        height: auto;
+        overflow: visible;
+      }
+      #loader-blade-base {
+        fill: none;
+        stroke: rgba(247, 245, 236, 0.14);
+        stroke-width: 2;
+      }
+      #loader-blade {
+        fill: none;
+        stroke: #f7f5ec;
+        stroke-linecap: round;
+        stroke-width: 3;
+        filter: drop-shadow(0 0 7px rgba(251, 155, 0, 0.8));
+      }
+      #loader-spark {
+        fill: #fb9b00;
+        filter: drop-shadow(0 0 10px #fb9b00);
+      }
+      /* One span per letter, each rising out of its own clipped box. Rendered as real
+         markup rather than split by script, so a resize can never re-split it. */
+      #loader-mark span {
+        display: block;
+        transform: translate3d(0, 110%, 0);
+        animation: crux-rise 900ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      #loader-mark span:nth-child(2) {
+        animation-delay: 70ms;
+      }
+      #loader-mark span:nth-child(3) {
+        animation-delay: 140ms;
+      }
+      #loader-mark span:nth-child(4) {
+        animation-delay: 210ms;
+      }
+      @keyframes crux-rise {
+        to {
+          transform: translate3d(0, 0, 0);
+        }
+      }
+
+      #loader-meta {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        font-family: ui-monospace, 'SFMono-Regular', monospace;
+        font-size: 0.6875rem;
+        letter-spacing: 0.34em;
+        text-transform: uppercase;
+        color: #5c6169;
+      }
+      #loader-count {
+        /* perf: tabular figures, so the counter cannot reflow its own line box as
+           digits change 60 times a second. */
+        font-variant-numeric: tabular-nums;
+        color: #f7f5ec;
+      }
+
+      html[data-motion-mode='reduce'] #loader-mark span {
+        transform: none;
+        animation: none;
+      }
+      html[data-motion-mode='reduce'] #loader,
+      html[data-motion-mode='reduce'] #loader-inner {
+        transition-duration: 1ms;
+      }
+      html[data-motion-mode='reduce'] #loader-canvas {
+        display: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="loader" role="status" aria-live="polite" aria-label="Loading The Last Ember">
+      <canvas id="loader-canvas" aria-hidden="true"></canvas>
+      <div id="loader-inner">
+        <div id="loader-kicker">The Last</div>
+        <div id="loader-mark" aria-hidden="true"><span>E</span><span>M</span><span>B</span><span>E</span><span>R</span></div>
+        <svg id="loader-forge" viewBox="0 0 900 160" aria-hidden="true">
+          <path id="loader-blade-base" d="M35 126 C260 122 560 92 842 30" />
+          <path id="loader-blade" d="M35 126 C260 122 560 92 842 30" />
+          <circle id="loader-spark" cx="35" cy="126" r="7" />
+        </svg>
+        <div id="loader-meta">
+          <span id="loader-phase">Forging the path</span>
+          <span id="loader-count">000%</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="root"></div>
+
+    <script>
+      /* 1 - Lock scroll before anything can paint or scroll. `overflow: hidden` is the
+         only lock that works this early, because Lenis does not exist yet. The bundle
+         does not duplicate this: motion/scrollLock.ts reads this exact state and
+         adopts it, so there is one lock with two drivers, never two locks. */
+      document.documentElement.style.overflow = 'hidden'
+
+      /* The boot sequence deliberately starts the visitor at the top (the entrance
+         choreography assumes it), so say that to the browser instead of letting it
+         restore a position that is about to be overwritten mid-reveal. */
+      if ('scrollRestoration' in history) history.scrollRestoration = 'manual'
+
+      /* 2 - Device tier BEFORE the first paint, so the CSS above degrades with no
+         flash and React never re-renders to account for it. Deliberately crude: these
+         four signals are the only ones available for free and synchronously. */
+      ;(function () {
+        var nav = navigator
+        var cores = nav.hardwareConcurrency || 8
+        var memory = nav.deviceMemory || 8
+        var saveData = nav.connection && nav.connection.saveData
+        var coarse = matchMedia('(pointer: coarse)').matches
+        document.documentElement.dataset.tier = saveData || cores <= 4 || memory <= 4 || (coarse && cores <= 6) ? 'low' : 'high'
+        document.documentElement.dataset.motionMode = new URLSearchParams(location.search).get('motion') === 'reduce' ? 'reduce' : 'full'
+      })()
+
+      /* 3 - The loader bridge, the only global this app creates. The bundle talks to
+         it through features/preloader/loaderBridge.ts and never touches these nodes
+         directly.
+
+         The synthetic FLOOR lives here rather than in the bundle, and that placement
+         was a measured correction, not a preference. With the floor in the bundle, a
+         Slow 3G profile showed the bar frozen at 000 for nine seconds and only the
+         watchdog recovering it: the bundle is itself one of the slow assets, so a
+         module inside it cannot report progress on its own arrival. Here the bar starts
+         moving on the first paint, whatever happens to the bundle afterwards.
+
+         FLOOR_MAX_WAIT_MS and FLOOR_CAP mirror PRELOADER_MAX_WAIT_MS and
+         PRELOADER_TRICKLE_CAP in src/constants/preloader.ts. That duplication is
+         unavoidable (this script runs before any module can be imported) and is the
+         same cross-boundary contract that src/constants/elements.ts documents. */
+      window.CRUX_LOADER = (function () {
+        var FLOOR_MAX_WAIT_MS = 6000
+        var FLOOR_CAP = 0.9
+
+        var blade,
+          spark,
+          count,
+          phase,
+          canvas,
+          canvasContext,
+          bladeLength = 0,
+          real = 0,
+          shown = 0,
+          raf = 0,
+          waiters = [],
+          floorActive = true,
+          startedAt = performance.now()
+
+        /* Eased, so it decelerates and reads as "working, nearly there" rather than as
+           a metronome. Capped below 1, so the floor alone can never claim the page is
+           ready. */
+        function floor() {
+          var t = Math.min(1, (performance.now() - startedAt) / FLOOR_MAX_WAIT_MS)
+          return (1 - (1 - t) * (1 - t)) * FLOOR_CAP
+        }
+
+        function drawSparks(now) {
+          canvas = canvas || document.getElementById('loader-canvas')
+          if (!canvas || document.documentElement.dataset.motionMode === 'reduce') return
+          canvasContext = canvasContext || canvas.getContext('2d')
+          if (!canvasContext) return
+
+          var ratio = Math.min(devicePixelRatio || 1, 2)
+          var width = innerWidth
+          var height = innerHeight
+          if (canvas.width !== Math.round(width * ratio) || canvas.height !== Math.round(height * ratio)) {
+            canvas.width = Math.round(width * ratio)
+            canvas.height = Math.round(height * ratio)
+          }
+          canvasContext.setTransform(ratio, 0, 0, ratio, 0, 0)
+          canvasContext.clearRect(0, 0, width, height)
+
+          var haze = canvasContext.createRadialGradient(width * 0.5, height * 0.58, 0, width * 0.5, height * 0.58, width * 0.65)
+          haze.addColorStop(0, 'rgba(45, 66, 78, 0.18)')
+          haze.addColorStop(1, 'rgba(10, 13, 19, 0)')
+          canvasContext.fillStyle = haze
+          canvasContext.fillRect(0, 0, width, height)
+
+          canvasContext.globalCompositeOperation = 'screen'
+          for (var index = 0; index < 54; index += 1) {
+            var life = (now * 0.00016 + index * 0.073 + shown * 0.24) % 1
+            var x = width * (0.12 + (((index * 37) % 77) / 100) * 0.98) + Math.sin(now * 0.001 + index) * 18
+            var y = height * (0.86 - life * 0.72)
+            var alpha = Math.sin(life * Math.PI) * (0.12 + shown * 0.42)
+            var size = 0.7 + ((index * 11) % 18) / 10
+            canvasContext.beginPath()
+            canvasContext.fillStyle = 'rgba(251, 155, 0, ' + alpha + ')'
+            canvasContext.arc(x, y, size, 0, Math.PI * 2)
+            canvasContext.fill()
+          }
+          canvasContext.globalCompositeOperation = 'source-over'
+        }
+
+        function paint(now) {
+          blade = blade || document.getElementById('loader-blade')
+          spark = spark || document.getElementById('loader-spark')
+          count = count || document.getElementById('loader-count')
+          phase = phase || document.getElementById('loader-phase')
+
+          /* The watchdog below removes the whole loader. Anything arriving after that
+             must no-op rather than throw on a detached node, and anyone waiting on
+             settled() has to be released: with no loader on screen there is nothing
+             left to wait for, and leaving them pending would strand the boot sequence
+             before it ever fires 'ready', so the entrance would never play. */
+          if (!blade || !spark || !count || !phase) {
+            raf = 0
+            waiters.splice(0).forEach(function (resolve) {
+              resolve()
+            })
+            return
+          }
+
+          var target = floorActive ? Math.max(real, floor()) : real
+
+          /* An eased follower, not a direct write. Two properties fall out of it that
+             a naive bar does not have: it never jumps backwards (both inputs are
+             monotonic) and it never steps in visible jerks when several assets resolve
+             on the same frame. */
+          shown += (target - shown) * 0.12
+          if (target - shown < 0.002) shown = target
+
+          if (!bladeLength) {
+            bladeLength = blade.getTotalLength()
+            blade.style.strokeDasharray = bladeLength
+          }
+          blade.style.strokeDashoffset = bladeLength * (1 - shown)
+          var point = blade.getPointAtLength(bladeLength * shown)
+          spark.setAttribute('cx', point.x)
+          spark.setAttribute('cy', point.y)
+          count.textContent = String(Math.round(shown * 100)).padStart(3, '0') + '%'
+          phase.textContent = shown < 0.42 ? 'Forging the path' : shown < 0.82 ? 'Tempering the blade' : 'Waking the ember'
+          drawSparks(now || performance.now())
+
+          if (shown >= 0.999)
+            waiters.splice(0).forEach(function (resolve) {
+              resolve()
+            })
+
+          raf = document.getElementById('loader') ? requestAnimationFrame(paint) : 0
+        }
+
+        raf = requestAnimationFrame(paint)
+
+        return {
+          setProgress: function (value) {
+            real = Math.min(1, Math.max(real, value)) // monotonic by contract
+            if (!raf) raf = requestAnimationFrame(paint)
+          },
+          /* Called once real progress is complete, so the bar stops being padded and
+             runs on measured progress alone for the final stretch. */
+          stopFloor: function () {
+            floorActive = false
+            if (!raf) raf = requestAnimationFrame(paint)
+          },
+          /* Resolves once the user has actually SEEN 100, not merely once the work
+             finished. Revealing at 61% on screen is the tell of a fake progress bar. */
+          settled: function () {
+            return new Promise(function (resolve) {
+              if (shown >= 0.999 || !document.getElementById('loader')) resolve()
+              else {
+                waiters.push(resolve)
+                if (!raf) raf = requestAnimationFrame(paint)
+              }
+            })
+          },
+        }
+      })()
+
+      /* 4 - Hard-kill watchdog. If the bundle 404s, throws on parse, or a CDN hangs,
+         the scroll lock in step 1 would trap the visitor on a covered page forever.
+         This is the only code path that can undo the lock without the bundle. */
+      setTimeout(function () {
+        var loader = document.getElementById('loader')
+        if (!loader) return
+        document.documentElement.style.overflow = ''
+        /* Disarm the hidden-until-animated CSS states. If we reached here the animation
+           layer never finished, so anything waiting to be revealed has to be shown
+           rather than left invisible on a page that has otherwise recovered. */
+        delete document.documentElement.dataset.motion
+        document.getElementById('root').dataset.revealed = 'true'
+        loader.remove()
+      }, 9000)
+    </script>
+
+    <!-- 5 - No-JS escape hatch: undoes the scroll lock and the curtain. -->
+    <noscript>
+      <style>
+        html {
+          overflow: auto !important;
+        }
+        #loader {
+          display: none !important;
+        }
+        #root {
+          opacity: 1 !important;
+        }
+      </style>
+    </noscript>
+
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

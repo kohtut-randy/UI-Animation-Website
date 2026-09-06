@@ -1,0 +1,11 @@
+/* The shared layer stack, imported by every entry. Order is load-bearing: Tailwind
+   first so its `@theme` machinery exists, then tokens (which extend the theme), then
+   base and utilities (which consume the tokens).
+
+   Entries own their own `@source` rules, because those differ: the production entry
+   excludes the dev-only tree, and the dev entry must not. */
+@import 'tailwindcss';
+@import './fonts.css';
+@import './tokens.css';
+@import './base.css';
+@import './utilities.css';

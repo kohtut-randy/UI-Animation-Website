@@ -1,0 +1,92 @@
+html {
+  /* Holds 16px to 1280px, then ramps to 20px by 1920px (0.625vw + 8px).
+     Every rem, type AND spacing, scales together, so wide screens grow
+     instead of freezing. */
+  font-size: clamp(16px, 0.625vw + 8px, 20px);
+  background: var(--surface);
+
+  /* clip, not hidden: hidden creates a scroll container and destabilises
+     ScrollTrigger pinning. And deliberately NOT scroll-behavior: smooth,
+     because Lenis owns scrolling and the two fight. */
+  overflow-x: clip;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-text-size-adjust: 100%;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--ink);
+  overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* PINNING CONSTRAINT. DO NOT VIOLATE.
+   ScrollTrigger pins with position: fixed. Any transform / filter /
+   backdrop-filter / will-change / contain on html, body, #root or any
+   wrapper above a pinned section creates a containing block and breaks
+   fixed pinning. motion/checkPinParents.ts fails loudly in dev if this
+   is ever violated. */
+
+#root {
+  opacity: 0;
+}
+#root[data-revealed='true'] {
+  opacity: 1;
+}
+
+/* Reveal initial states live in CSS, not JS: no FOUC, and JS makes ZERO style writes
+   before the first paint.
+
+   They are gated on html[data-motion='on'], which motion/initMotion.ts sets before
+   React ever renders and index.html's watchdog clears. That gate is a fail-safe, and it
+   covers a case the <noscript> block does not: JS that loads and then THROWS. With an
+   ungated `opacity: 0` the headline and every revealed block would stay invisible
+   forever on a page that had otherwise recovered. No flag means content is visible. */
+html[data-motion='on'] [data-reveal] {
+  opacity: 0;
+}
+
+/* The kinetic headline's clip-box offset, same gate and same reasoning. */
+html[data-motion='on'] [data-reveal-line] {
+  transform: translateY(110%);
+}
+
+/* The one keyframe in the stylesheet. Decorative idle loops that nothing else has to
+   coordinate with stay in CSS rather than joining the GSAP timeline. */
+@keyframes crux-cue {
+  0% {
+    transform: translateY(-100%);
+  }
+  60%,
+  100% {
+    transform: translateY(1000%);
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+/* Layer 1 of three for reduced motion. This one works even if the bundle
+   never loads. Layer 2 is the gsap.matchMedia `reduce` branch; layer 3 is
+   module level, where Lenis and ChalkField are never even imported. */
+html[data-motion-mode='reduce'] *,
+html[data-motion-mode='reduce'] *::before,
+html[data-motion-mode='reduce'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+html[data-motion-mode='reduce'] [data-reveal],
+html[data-motion-mode='reduce'] [data-reveal-line] {
+  opacity: 1 !important;
+  transform: none !important;
+}
