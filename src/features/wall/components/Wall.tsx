@@ -10,8 +10,8 @@ import { StoryPanel } from './StoryPanel'
 const STORY = [
   {
     chapter: 'The Cut',
-    title: 'The first attack comes out of the mist.',
-    copy: 'A shuriken cuts across the road. He drops beneath it, keeps one hand over the firebrand, and sees a masked swordsman step from the trees.',
+    title: 'Steel spins out of the mist.',
+    copy: 'A shuriken opens the air before the mark shows red. He drops beneath it, keeps one hand over the firebrand, and sees a masked swordsman step from the trees.',
     image: '/ember-shuriken.jpg',
     imagePosition: '54% center',
     tone: 'dark' as const,
@@ -19,8 +19,8 @@ const STORY = [
   },
   {
     chapter: 'The Pass',
-    title: 'The pass is already full of soldiers.',
-    copy: 'The ambush becomes a running fight between the rocks. He holds the rear long enough for the firebrand to stay dry, then follows the mountain road alone.',
+    title: 'Fire and arrows fill the pass.',
+    copy: 'Banners break rank as dust and flame fill the narrow rocks. He holds the rear long enough for the firebrand to stay dry, then follows the mountain road alone.',
     image: '/ember-battle.jpg',
     imagePosition: '50% center',
     tone: 'dark' as const,
@@ -28,8 +28,8 @@ const STORY = [
   },
   {
     chapter: 'The Bell',
-    title: 'The village has gone quiet after the fighting.',
-    copy: 'Ash covers the bell tower and the gates stand open. The keeper gives him fresh oil and tells him the mountain beacon has not burned for three nights.',
+    title: 'Embers drift where the village stood.',
+    copy: 'Ash still rises past the bell tower and the gates stand open. The keeper gives him fresh oil and tells him the mountain beacon has not burned for three nights.',
     image: '/ember-village.jpg',
     imagePosition: '58% center',
     tone: 'dark' as const,
@@ -37,8 +37,8 @@ const STORY = [
   },
   {
     chapter: 'The Climb',
-    title: 'Rain turns the mountain trail into a river.',
-    copy: 'He wraps the firebrand beneath his coat and climbs by touch. Behind him, the storm washes away every footprint and every way back.',
+    title: 'Lightning splits the climbing rain.',
+    copy: 'He wraps the firebrand beneath his coat and climbs by touch. Behind him, thunder washes away every footprint and every way back.',
     image: '/ember-storm.jpg',
     imagePosition: '48% center',
     tone: 'dark' as const,
@@ -46,7 +46,7 @@ const STORY = [
   },
   {
     chapter: 'The Crossing',
-    title: 'The frozen river breaks beneath his feet.',
+    title: 'Snow settles on the frozen river.',
     copy: 'A watchtower burns on the far bank. He leaves his pack in the water, crawls across the ice, and protects the last dry wick inside his sleeve.',
     image: '/ember-river.jpg',
     imagePosition: 'center',
@@ -55,8 +55,8 @@ const STORY = [
   },
   {
     chapter: 'The Shrine',
-    title: 'The beacon burns before the sun rises.',
-    copy: 'At the shrine above the valley, he lights the oil and steps back. One by one, lamps answer from the villages below, showing the survivors the way home.',
+    title: 'Paper lanterns catch the first light.',
+    copy: 'At the shrine above the valley, he lights the oil and steps back. Paper and ash drift past the lamps that answer from the villages below, showing the way home.',
     image: '/ember-dawn.jpg',
     imagePosition: '52% center',
     tone: 'light' as const,

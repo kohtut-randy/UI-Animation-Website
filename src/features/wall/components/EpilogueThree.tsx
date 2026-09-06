@@ -36,10 +36,10 @@ export const EpilogueThree = () => {
         />
         <div data-epilogue-three-copy className='gutter relative z-10 max-w-[34rem]'>
           <p className='eyebrow mb-6 text-eyebrow text-[#f4c77c]'>The moon</p>
-          <h2 className='max-w-[9ch] font-display text-display-lg'>The moon finds him before the beacon does.</h2>
+          <h2 className='max-w-[9ch] font-display text-display-lg'>The moon rises over the ice.</h2>
           <p className='mt-7 max-w-[29ch] text-lede text-chalk-100/62'>
-            He crosses the broken river beneath a white sky. For one quiet breath, the moon lays a road across the ice and shows him where
-            to climb.
+            He crosses the broken river beneath a white sky. For one quiet breath, the moon lays a frozen road across the current and shows
+            him where to climb.
           </p>
         </div>
       </div>

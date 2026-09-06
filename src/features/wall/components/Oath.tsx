@@ -77,10 +77,11 @@ export const Oath = () => {
           className='absolute left-1/2 top-1/2 size-[min(70vw,24rem)] -translate-x-1/2 -translate-y-1/2 opacity-90 md:size-[min(56vw,30rem)] lg:size-[min(90vw,52rem)]'
         />
         <div data-oath-copy className='gutter relative z-10 w-full text-center'>
-          <p className='eyebrow mb-6 text-eyebrow text-jug-400'>The climb</p>
-          <h2 className='mx-auto max-w-[10ch] font-display text-display-lg'>The storm tests what the firebrand can carry.</h2>
+          <p className='eyebrow mb-6 text-eyebrow text-jug-400'>The oath</p>
+          <h2 className='mx-auto max-w-[10ch] font-display text-display-lg'>He swears his oath at the gate.</h2>
           <p className='mx-auto mt-7 max-w-[32ch] text-lede text-chalk-100/62'>
-            He keeps the oil and wick beneath his coat. Every step takes him higher, while the storm closes the trail behind him.
+            The mountain gate opens before the climb. He keeps the oil and wick beneath his coat, promising to reach the beacon before the
+            storm closes the trail.
           </p>
         </div>
       </div>

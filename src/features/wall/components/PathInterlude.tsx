@@ -22,11 +22,11 @@ export const PathInterlude = () => (
       </svg>
 
       <div className='gutter absolute inset-x-0 top-[10%] z-10 sm:top-[12%]'>
-        <p className='eyebrow mb-5 text-eyebrow text-[#9e3b2d]'>The pass</p>
-        <h2 className='max-w-[8ch] font-display text-display-lg'>The road narrows before the pass.</h2>
+        <p className='eyebrow mb-5 text-eyebrow text-[#9e3b2d]'>The map</p>
+        <h2 className='max-w-[8ch] font-display text-display-lg'>The map thins before the pass.</h2>
       </div>
       <p className='gutter absolute inset-x-0 bottom-[8%] z-10 ml-auto max-w-[34rem] text-lede text-granite-950/65 sm:bottom-[10%]'>
-        The old route climbs through the pass. The beacon is on the far ridge, and the road is the only way there before dawn.
+        The marked route climbs through the pass. The beacon sits on the far ridge, and this line is the only way there before dawn.
       </p>
     </div>
   </section>

@@ -40,9 +40,10 @@ export const EpilogueTwo = () => {
         />
         <div data-epilogue-two-copy className='gutter relative z-10 max-w-[34rem]'>
           <p className='eyebrow mb-6 text-eyebrow text-jug-400'>The bell</p>
-          <h2 className='max-w-[9ch] font-display text-display-lg'>The last bell marks the safe road.</h2>
+          <h2 className='max-w-[9ch] font-display text-display-lg'>The sun sets behind the bell.</h2>
           <p className='mt-7 max-w-[27ch] text-lede text-chalk-100/62'>
-            When the battle fades, the keeper rings once through the ash. The sound points him toward the trail above the village.
+            When the battle fades to embers, the keeper rings once through the ash. The sound points him toward the trail above the smoking
+            village.
           </p>
         </div>
       </div>
