@@ -523,7 +523,16 @@ export const useWallMotion = (): RefObject<HTMLElement | null> => {
           gsap.to(mapRoute, {
             strokeDashoffset: 0,
             ease: EASE_LINEAR,
-            scrollTrigger: { trigger: map, start: SCROLL_TRIGGER_START_PIN, end: SCROLL_TRIGGER_STICKY_END, scrub: SCRUB_SOFT },
+            scrollTrigger: {
+              trigger: map,
+              start: SCROLL_TRIGGER_START_PIN,
+              end: SCROLL_TRIGGER_STICKY_END,
+              scrub: SCRUB_SOFT,
+              // scrub smoothing lags behind fast scrolls, so force the line to its
+              // drawn/undrawn end the instant the pin releases either direction.
+              onLeave: () => gsap.set(mapRoute, { strokeDashoffset: 0 }),
+              onLeaveBack: () => gsap.set(mapRoute, { strokeDashoffset: routeLength }),
+            },
           })
           mapContours.forEach((contour, index) => {
             gsap.fromTo(

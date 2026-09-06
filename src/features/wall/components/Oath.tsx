@@ -40,6 +40,10 @@ export const Oath = () => {
             start: SCROLL_TRIGGER_START_PIN,
             end: SCROLL_TRIGGER_STICKY_END,
             scrub: 0.35,
+            // scrub smoothing lags behind fast scrolls, so force the final/first
+            // frame the instant the pin releases instead of leaving it mid-animation.
+            onLeave: () => animation.goToAndStop(animation.totalFrames - 1, true),
+            onLeaveBack: () => animation.goToAndStop(0, true),
           },
           onUpdate: () => animation.goToAndStop(frame.value, true),
         })
