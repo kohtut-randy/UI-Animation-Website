@@ -22,7 +22,7 @@ export const Hero = () => {
             width={1672}
             height={941}
             fetchPriority='high'
-            className='size-full object-cover object-[62%_center] md:object-center'
+            className='size-full object-cover object-[78%_center] md:object-[68%_center] lg:object-center'
           />
         </div>
         <div
