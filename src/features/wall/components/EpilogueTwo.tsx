@@ -3,12 +3,17 @@ export const EpilogueTwo = () => {
     <section data-epilogue-two className='relative h-[320svh] bg-[#120d0b] text-chalk-100'>
       <div className='sticky top-0 flex h-svh items-center overflow-hidden'>
         <div aria-hidden='true' className='absolute inset-0 bg-[linear-gradient(180deg,#161a20_0%,#20252b_48%,#32130f_100%)]' />
+
+        {/* Sun - now moves further down on mobile/tablet */}
         <div
           data-epilogue-two-sun
           aria-hidden='true'
-          className='absolute left-[64%] top-[58%] size-[clamp(7rem,18vw,15rem)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#ffb15b]/80 shadow-[0_0_35px_#ed6835,0_0_130px_rgba(211,67,27,0.7)]'
+          className='absolute left-[64%] size-[clamp(7rem,18vw,15rem)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#ffb15b]/80 shadow-[0_0_35px_#ed6835,0_0_130px_rgba(211,67,27,0.7)] sun-position'
         />
-        <div aria-hidden='true' className='absolute inset-x-0 top-[58%] h-px bg-[#f7b36a]/45 shadow-[0_0_22px_#d3431b]' />
+
+        {/* Horizon line - matches sun position */}
+        <div aria-hidden='true' className='absolute inset-x-0 h-px bg-[#f7b36a]/45 shadow-[0_0_22px_#d3431b] horizon-position' />
+
         <div
           aria-hidden='true'
           className='absolute left-[72%] top-1/2 h-[70vh] w-px -translate-y-1/2 bg-gradient-to-b from-transparent via-jug-400/70 to-transparent'
@@ -41,6 +46,33 @@ export const EpilogueTwo = () => {
           </p>
         </div>
       </div>
+
+      <style>{`
+        .sun-position {
+          top: calc(58% + 4vh);
+        }
+        .horizon-position {
+          top: calc(58% + 4vh);
+        }
+        
+        @media (max-width: 1024px) {
+          .sun-position {
+            top: calc(58% + 12vh);
+          }
+          .horizon-position {
+            top: calc(58% + 12vh);
+          }
+        }
+        
+        @media (max-width: 640px) {
+          .sun-position {
+            top: calc(58% + 20vh);
+          }
+          .horizon-position {
+            top: calc(58% + 20vh);
+          }
+        }
+      `}</style>
     </section>
   )
 }

@@ -132,54 +132,179 @@ const drawBloodPour = (context: CanvasRenderingContext2D, width: number, height:
   if (progress < BLOOD_DROP_START) return
 
   const intensity = Math.min(1, (progress - BLOOD_DROP_START) * BLOOD_INTENSITY_RATE)
-  context.fillStyle = `rgba(58, 0, 7, ${intensity * BLOOD_WASH_ALPHA})`
+
+  // Dark base wash - more realistic blood stain
+  context.fillStyle = `rgba(40, 0, 5, ${intensity * 0.15})`
   context.fillRect(0, 0, width, height)
 
+  // Main blood streams with realistic flow
   for (let index = 0; index < BLOOD_STREAM_COUNT; index += 1) {
-    const depth = 0.35 + ((index * 17) % 65) / 100
+    const depth = 0.2 + ((index * 17) % 65) / 100
     const baseX = (((index * 47) % 103) / 102) * width
     const widthFactor = ((index * 29) % 100) / 100
     const streamWidth = BLOOD_STREAM_MIN_WIDTH + widthFactor * (BLOOD_STREAM_MAX_WIDTH - BLOOD_STREAM_MIN_WIDTH)
-    const wave = Math.sin(time * (0.25 + depth * 0.2) + index * 1.7) * (4 + depth * 14)
-    const x = baseX + wave
-    const alpha = intensity * (0.24 + depth * 0.5)
+
+    // More complex wave motion for realistic flow
+    const wave1 = Math.sin(time * (0.15 + depth * 0.25) + index * 1.7) * (6 + depth * 18)
+    const wave2 = Math.cos(time * (0.2 + depth * 0.15) + index * 0.9) * (3 + depth * 10)
+    const x = baseX + wave1 + wave2 * 0.3
+
+    const alpha = intensity * (0.3 + depth * 0.55)
+
+    // Rich blood color gradient - more realistic
     const streamGradient = context.createLinearGradient(x - streamWidth, 0, x + streamWidth, 0)
-    streamGradient.addColorStop(0, `rgba(55, 0, 7, ${alpha * 0.55})`)
-    streamGradient.addColorStop(0.35, `rgba(139, 8, 20, ${alpha})`)
-    streamGradient.addColorStop(0.62, `rgba(104, 3, 13, ${alpha * 0.92})`)
-    streamGradient.addColorStop(1, `rgba(35, 0, 5, ${alpha * 0.5})`)
+    streamGradient.addColorStop(0, `rgba(30, 0, 3, ${alpha * 0.4})`)
+    streamGradient.addColorStop(0.2, `rgba(120, 5, 15, ${alpha * 0.7})`)
+    streamGradient.addColorStop(0.4, `rgba(180, 12, 25, ${alpha * 0.9})`)
+    streamGradient.addColorStop(0.6, `rgba(140, 8, 18, ${alpha * 0.85})`)
+    streamGradient.addColorStop(0.8, `rgba(80, 3, 10, ${alpha * 0.6})`)
+    streamGradient.addColorStop(1, `rgba(25, 0, 3, ${alpha * 0.35})`)
 
     context.save()
     context.fillStyle = streamGradient
+
+    // Main stream body with organic shape
     context.beginPath()
-    context.moveTo(x - streamWidth * 0.55, -20)
-    for (let step = 0; step <= 8; step += 1) {
-      const y = (step / 8) * height
-      const drift = Math.sin(time * 0.25 + index + step * 0.8) * (3 + depth * 9)
-      context.lineTo(x - streamWidth * 0.55 + drift, y)
+    const segments = 16
+    for (let step = 0; step <= segments; step += 1) {
+      const y = (step / segments) * height
+      const flowOffset = Math.sin(time * 0.2 + index + step * 0.6) * (4 + depth * 12)
+      const widthAtY = streamWidth * (0.7 + Math.sin(time * 0.3 + index * 0.5 + step * 0.4) * 0.2)
+      context.lineTo(x - widthAtY * 0.4 + flowOffset * 0.5, y)
     }
-    for (let step = 8; step >= 0; step -= 1) {
-      const y = (step / 8) * height
-      const drift = Math.sin(time * 0.25 + index + step * 0.8) * (3 + depth * 9)
-      const widthAtY = streamWidth * (0.78 + Math.sin(time * 0.9 + index + step) * 0.16)
-      context.lineTo(x + widthAtY + drift, y)
+    for (let step = segments; step >= 0; step -= 1) {
+      const y = (step / segments) * height
+      const flowOffset = Math.sin(time * 0.2 + index + step * 0.6) * (4 + depth * 12)
+      const widthAtY = streamWidth * (0.7 + Math.sin(time * 0.3 + index * 0.5 + step * 0.4) * 0.2)
+      context.lineTo(x + widthAtY * 0.4 + flowOffset * 0.5, y)
     }
     context.closePath()
     context.fill()
 
-    const bulgeTravel = (time * (0.08 + depth * 0.1) + progress + index * 0.13) % 1.15
-    const bulgeY = (bulgeTravel - 0.1) * height
-    context.fillStyle = `rgba(178, 18, 31, ${Math.min(0.72, alpha + 0.12)})`
+    // Blood drops and splatters along the stream
+    for (let drop = 0; drop < 6; drop += 1) {
+      const dropOffset = (drop / 6) * height + ((time * (0.3 + depth * 0.2) * 50) % height)
+      const dropX = x + Math.sin(time * 0.5 + index * 1.3 + drop * 2.1) * (streamWidth * 0.6)
+      const dropSize = (1 + Math.sin(time * 0.4 + index * 0.7 + drop * 1.8) * 0.5) * (2 + depth * 4)
+
+      // Tear-drop shape for falling drops
+      context.beginPath()
+      context.ellipse(dropX, dropOffset, dropSize * 0.8, dropSize * 1.3, Math.sin(time + index + drop) * 0.3, 0, Math.PI * 2)
+      context.fillStyle = `rgba(160, 10, 25, ${alpha * (0.4 + depth * 0.3)})`
+      context.fill()
+
+      // Small splatter trails
+      if (drop % 2 === 0) {
+        for (let splatter = 0; splatter < 3; splatter += 1) {
+          const angle = Math.PI * 2 * (splatter / 3) + time * 0.5 + index
+          const dist = dropSize * (1 + Math.sin(time + index + splatter) * 0.5)
+          context.beginPath()
+          context.arc(dropX + Math.cos(angle) * dist, dropOffset + Math.sin(angle) * dist * 0.5, dropSize * 0.2, 0, Math.PI * 2)
+          context.fillStyle = `rgba(120, 5, 15, ${alpha * 0.2})`
+          context.fill()
+        }
+      }
+    }
+
+    // Blood pooling at bottom - more realistic accumulation
+    const poolY = height * (0.85 + depth * 0.1)
+    const poolWidth = streamWidth * (0.8 + Math.sin(time * 0.2 + index) * 0.2)
+    const poolGradient = context.createRadialGradient(x, poolY, 0, x, poolY, poolWidth * 0.8)
+    poolGradient.addColorStop(0, `rgba(130, 8, 20, ${alpha * 0.6})`)
+    poolGradient.addColorStop(0.5, `rgba(80, 3, 12, ${alpha * 0.4})`)
+    poolGradient.addColorStop(1, `rgba(40, 0, 5, ${alpha * 0.15})`)
+    context.fillStyle = poolGradient
     context.beginPath()
-    context.ellipse(x, bulgeY, streamWidth * 0.58, streamWidth * 0.85, 0, 0, Math.PI * 2)
+    context.ellipse(x, poolY, poolWidth * 0.8, poolWidth * 0.3, 0, 0, Math.PI * 2)
     context.fill()
 
-    context.strokeStyle = `rgba(232, 66, 70, ${alpha * 0.24})`
-    context.lineWidth = Math.max(1, streamWidth * 0.12)
+    // Highlight on wet blood surface
+    context.fillStyle = `rgba(200, 60, 80, ${alpha * 0.08})`
     context.beginPath()
-    context.moveTo(x - streamWidth * 0.2, -10)
-    context.lineTo(x - streamWidth * 0.2, height)
-    context.stroke()
+    context.ellipse(x - poolWidth * 0.2, poolY - poolWidth * 0.05, poolWidth * 0.2, poolWidth * 0.06, -0.3, 0, Math.PI * 2)
+    context.fill()
+
+    context.restore()
+  }
+
+  // Large splatter effects - random blood drops
+  if (intensity > 0.3) {
+    const splatterCount = Math.floor(8 + intensity * 16)
+    for (let i = 0; i < splatterCount; i += 1) {
+      const x = (Math.sin(i * 127.1 + 311.7) * 0.5 + 0.5) * width
+      const y = (Math.sin(i * 269.5 + 183.3) * 0.5 + 0.5) * height * 0.7
+      const size = 2 + Math.sin(i * 419.2 + 131.7) * 4 + 4
+      const alpha = intensity * (0.1 + Math.sin(i * 631.7 + 53.1) * 0.1 + 0.1)
+
+      // Irregular splatter shapes
+      context.save()
+      context.fillStyle = `rgba(120, 5, 15, ${alpha})`
+      context.beginPath()
+      const points = 5 + Math.floor(Math.sin(i * 73.7 + 211.9) * 2 + 3)
+      for (let p = 0; p < points; p += 1) {
+        const angle = (p / points) * Math.PI * 2 + Math.sin(i * 97.3 + p) * 0.5
+        const radius = size * (0.5 + Math.sin(i * 113.7 + p * 1.5) * 0.4 + 0.5)
+        const px = x + Math.cos(angle) * radius
+        const py = y + Math.sin(angle) * radius * 0.7
+        if (p === 0) context.moveTo(px, py)
+        else context.lineTo(px, py)
+      }
+      context.closePath()
+      context.fill()
+      context.restore()
+    }
+  }
+
+  // Dripping effect from top
+  if (intensity > 0.2) {
+    const dripCount = Math.floor(6 + intensity * 12)
+    for (let i = 0; i < dripCount; i += 1) {
+      const x = (Math.sin(i * 317.1 + 197.3) * 0.5 + 0.5) * width
+      const dripProgress = (time * (0.1 + Math.sin(i * 53.7) * 0.05) + i * 0.3) % 1
+      const y = -10 + dripProgress * height * 0.3
+      const size = 1 + Math.sin(i * 231.7) * 1 + 2
+
+      context.save()
+      const alpha = intensity * (0.2 + (1 - dripProgress) * 0.3)
+
+      // Drip drop
+      context.beginPath()
+      context.ellipse(x, y, size * 0.6, size * 1.2, 0, 0, Math.PI * 2)
+      context.fillStyle = `rgba(140, 8, 20, ${alpha})`
+      context.fill()
+
+      // Drip trail
+      context.beginPath()
+      context.moveTo(x - size * 0.2, y - size * 0.5)
+      context.quadraticCurveTo(x - size * 0.1, y - size * 3, x + size * 0.1, y - size * 3.5)
+      context.quadraticCurveTo(x + size * 0.2, y - size * 3, x + size * 0.2, y - size * 0.5)
+      context.fillStyle = `rgba(100, 5, 12, ${alpha * 0.3})`
+      context.fill()
+      context.restore()
+    }
+  }
+
+  // Vein-like blood vessel details for realism
+  if (intensity > 0.4) {
+    context.save()
+    for (let i = 0; i < 8; i += 1) {
+      const x = (Math.sin(i * 137.1 + 251.3) * 0.5 + 0.5) * width
+      const y = (Math.sin(i * 283.5 + 167.9) * 0.5 + 0.5) * height * 0.5
+      const length = 20 + Math.sin(i * 411.7) * 15 + 20
+      const angle = Math.sin(i * 313.1 + time * 0.1) * 0.8
+
+      context.beginPath()
+      context.moveTo(x, y)
+      for (let j = 0; j < 10; j += 1) {
+        const t = j / 10
+        const px = x + Math.cos(angle + t * 0.5) * t * length
+        const py = y + Math.sin(angle + t * 0.3 + Math.sin(t * 3 + time * 0.1) * 0.2) * t * length * 0.3
+        context.lineTo(px, py)
+      }
+      context.strokeStyle = `rgba(80, 0, 10, ${intensity * 0.08})`
+      context.lineWidth = 1.5
+      context.stroke()
+    }
     context.restore()
   }
 }
