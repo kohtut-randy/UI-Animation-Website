@@ -381,7 +381,7 @@ export const StoryAtmosphere = ({ effect }: StoryAtmosphereProps) => {
           drawArrow(context, x, y, angle, arrowLength, alpha)
         }
 
-        // ENHANCED WAVING BANNERS
+        // WAVING BANNERS WITHOUT KENJI
         for (let index = 0; index < BATTLE_BANNER_COUNT; index += 1) {
           const bannerX = width * (0.62 + index * 0.15)
           const bannerTop = height * (0.1 + (index % 2) * 0.08)
@@ -456,16 +456,27 @@ export const StoryAtmosphere = ({ effect }: StoryAtmosphereProps) => {
           }
           context.stroke()
 
-          // Japanese character with wave offset
+          // Add a decorative emblem or pattern instead of kenji
+          // Simple circle emblem
           context.save()
-          context.fillStyle = `rgba(255, 223, 173, ${0.88 + Math.sin(time * 0.6 + index * 0.5) * 0.08})`
-          context.font = `${Math.round(bannerHeight * 0.3)}px "Noto Serif JP", serif`
-          context.textAlign = 'center'
-          context.textBaseline = 'middle'
+          context.beginPath()
+          const emblemX = bannerX + bannerWidth * 0.5 + Math.sin(time * waveSpeed + 0.5 + waveOffset) * waveAmplitude * 0.3
+          const emblemY = bannerTop + bannerHeight * 0.42 + Math.sin(time * waveSpeed * 0.9 + 0.3 + waveOffset) * waveAmplitude * 0.15
+          const emblemRadius = Math.min(bannerWidth, bannerHeight) * 0.12
 
-          const charX = bannerX + bannerWidth * 0.5 + Math.sin(time * waveSpeed + 0.5 + waveOffset) * waveAmplitude * 0.3
-          const charY = bannerTop + bannerHeight * 0.42 + Math.sin(time * waveSpeed * 0.9 + 0.3 + waveOffset) * waveAmplitude * 0.15
-          context.fillText('戦', charX, charY)
+          // Outer ring
+          context.arc(emblemX, emblemY, emblemRadius, 0, Math.PI * 2)
+          context.fillStyle = `rgba(255, 215, 140, ${0.5 + Math.sin(time * 0.5 + index) * 0.1})`
+          context.fill()
+          context.strokeStyle = `rgba(200, 180, 120, ${0.4 + Math.sin(time * 0.6 + index * 0.5) * 0.08})`
+          context.lineWidth = 1.5
+          context.stroke()
+
+          // Inner dot
+          context.beginPath()
+          context.arc(emblemX, emblemY, emblemRadius * 0.35, 0, Math.PI * 2)
+          context.fillStyle = `rgba(200, 180, 120, ${0.6 + Math.sin(time * 0.7 + index * 0.3) * 0.1})`
+          context.fill()
           context.restore()
 
           // Flag edge detail - flowing fabric look
@@ -507,7 +518,6 @@ export const StoryAtmosphere = ({ effect }: StoryAtmosphereProps) => {
           context.stroke()
         }
       }
-
       context.restore()
       frame = active ? window.requestAnimationFrame(paint) : 0
     }
