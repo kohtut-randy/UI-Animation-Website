@@ -464,15 +464,39 @@ export const StoryAtmosphere = ({ effect }: StoryAtmosphereProps) => {
 
       if (effect === 'battle') {
         const firePulse = 0.5 + Math.sin(time * 1.4 + progress * 4) * 0.18
+
+        // Narrow rock walls closing in on the pass, darkening as the fight builds
+        const rockAlpha = 0.5 + progress * 0.35
+        context.fillStyle = `rgba(18, 16, 15, ${rockAlpha})`
+        context.beginPath()
+        context.moveTo(0, height)
+        context.lineTo(0, height * 0.18)
+        context.lineTo(width * 0.05, height * 0.3)
+        context.lineTo(width * 0.09, height * 0.12)
+        context.lineTo(width * 0.14, height * 0.34)
+        context.lineTo(width * 0.1, height)
+        context.closePath()
+        context.fill()
+
+        context.beginPath()
+        context.moveTo(width, height)
+        context.lineTo(width, height * 0.22)
+        context.lineTo(width * 0.94, height * 0.08)
+        context.lineTo(width * 0.9, height * 0.28)
+        context.lineTo(width * 0.86, height * 0.1)
+        context.lineTo(width * 0.88, height)
+        context.closePath()
+        context.fill()
+
         context.globalCompositeOperation = 'screen'
 
         for (let index = 0; index < BATTLE_FIRE_COUNT; index += 1) {
           const fireX = width * (0.16 + index * 0.19)
           const fireY = height * (0.74 + (index % 2) * 0.08)
-          const radius = width * (0.08 + (index % 3) * 0.025)
+          const radius = width * (0.08 + (index % 3) * 0.025) * (0.7 + progress * 0.55)
           const glow = context.createRadialGradient(fireX, fireY, 0, fireX, fireY, radius)
-          glow.addColorStop(0, `rgba(255, 164, 65, ${firePulse * 0.16})`)
-          glow.addColorStop(0.35, `rgba(174, 38, 20, ${firePulse * 0.1})`)
+          glow.addColorStop(0, `rgba(255, 164, 65, ${firePulse * (0.12 + progress * 0.2)})`)
+          glow.addColorStop(0.35, `rgba(174, 38, 20, ${firePulse * (0.06 + progress * 0.12)})`)
           glow.addColorStop(1, 'rgba(80, 12, 10, 0)')
           context.fillStyle = glow
           context.fillRect(fireX - radius, fireY - radius, radius * 2, radius * 2)
@@ -506,25 +530,41 @@ export const StoryAtmosphere = ({ effect }: StoryAtmosphereProps) => {
           drawArrow(context, x, y, angle, arrowLength, alpha)
         }
 
-        // WAVING BANNERS WITHOUT KENJI
+        // WAVING BANNERS - ranks break formation as the fight wears on
         for (let index = 0; index < BATTLE_BANNER_COUNT; index += 1) {
-          const bannerX = width * (0.62 + index * 0.15)
+          const bannerX = width * (0.42 + index * 0.15)
           const bannerTop = height * (0.1 + (index % 2) * 0.08)
           const bannerHeight = height * (0.3 + (index % 2) * 0.08)
           const bannerWidth = width * 0.14
+          const groundY = height * 0.86
 
           // Waving flag with sine wave
           const waveSpeed = 1.2 + index * 0.3
           const waveAmplitude = width * (0.025 + index * 0.008)
           const waveOffset = index * 0.8 + progress * 0.5
 
-          // Draw pole
-          context.strokeStyle = 'rgba(12, 9, 12, 0.78)'
-          context.lineWidth = 3
+          // Each pole leans further off true as the banners break rank, pivoting from where it's planted
+          const leanDirection = index % 2 === 0 ? -1 : 1
+          const leanAngle = leanDirection * (0.05 + progress * 0.24) + Math.sin(time * 0.4 + index) * 0.015
+          context.save()
+          context.translate(bannerX, groundY)
+          context.rotate(leanAngle)
+          context.translate(-bannerX, -groundY)
+
+          // Draw pole, driven down to the ground
+          context.strokeStyle = 'rgba(120, 80, 42, 0.92)'
+          context.lineWidth = 4
+          context.lineCap = 'round'
           context.beginPath()
           context.moveTo(bannerX, bannerTop - height * 0.08)
-          context.lineTo(bannerX + Math.sin(time * 0.3 + index) * 2, bannerTop + bannerHeight)
+          context.lineTo(bannerX + Math.sin(time * 0.3 + index) * 2, groundY)
           context.stroke()
+
+          // Planted base - pole driven into the rocky ground
+          context.beginPath()
+          context.ellipse(bannerX, groundY, 7, 2.5, 0, 0, Math.PI * 2)
+          context.fillStyle = 'rgba(38, 30, 21, 0.85)'
+          context.fill()
 
           // Draw flag with wave
           context.beginPath()
@@ -619,6 +659,7 @@ export const StoryAtmosphere = ({ effect }: StoryAtmosphereProps) => {
             context.stroke()
           }
           context.restore()
+          context.restore()
         }
 
         const mist = context.createLinearGradient(0, height * 0.62, 0, height)
@@ -635,7 +676,7 @@ export const StoryAtmosphere = ({ effect }: StoryAtmosphereProps) => {
           const x = ((((index * 47) % 109) / 100 + travel * 0.3) % 1.2) * width - width * 0.1
           const y = height * (0.46 + (((index * 71) % 48) / 100) * 0.5) + Math.sin(time * 0.6 + index) * 12
           const length = 14 + depth * 48
-          context.strokeStyle = `rgba(210, 190, 164, ${0.05 + depth * 0.14})`
+          context.strokeStyle = `rgba(210, 190, 164, ${(0.05 + depth * 0.14) * (0.55 + progress * 0.85)})`
           context.lineWidth = 0.7 + depth * 1.4
           context.beginPath()
           context.moveTo(x, y)
