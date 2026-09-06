@@ -78,11 +78,8 @@ export const DISTANCE_MAGNET = 26
 export const DISTANCE_HERO_SCENE_Y = 120
 export const DISTANCE_HERO_MIST_X = 180
 export const DISTANCE_HERO_FOREGROUND_Y = 150
-export const DISTANCE_MAP_CAMERA_Y = 6
 export const HERO_SCENE_START_SCALE = 1.12
 export const HERO_SCENE_END_SCALE = 1.02
-export const MAP_CAMERA_START_SCALE = 1.06
-export const MAP_CAMERA_END_SCALE = 1
 
 /* THE REDUCED-MOTION BUDGET: opacity only, one fifth the time. */
 export const REDUCED_MOTION_DURATION = 0.2

@@ -22,9 +22,7 @@ import {
   SCRUB_LOOSE,
   SCRUB_EPILOGUE_THREE,
   SCRUB_SOFT,
-  DISTANCE_MAP_CAMERA_Y,
-  MAP_CAMERA_END_SCALE,
-  MAP_CAMERA_START_SCALE,
+  DISTANCE_REVEAL_Y_LG,
   STORY_CHAPTER_COUNT,
 } from 'constants/index'
 import { gsap, useGSAP } from 'motion/gsapClient'
@@ -63,12 +61,13 @@ const SELECTOR = {
   kinetic: '[data-kinetic]',
   kineticRows: '[data-kinetic-row]',
   kineticBlade: '[data-kinetic-blade]',
-  map: '[data-map]',
-  mapArt: '[data-map-art]',
-  mapRoute: '[data-map-route]',
-  mapContours: '[data-map-contour]',
-  mapBeacon: '[data-map-beacon]',
-  mapBeaconRing: '[data-map-beacon-ring]',
+  path: '[data-path]',
+  pathCopy: '[data-path-copy]',
+  pathLede: '[data-path-lede]',
+  pathRidges: '[data-path-ridge]',
+  pathSmoke: '[data-path-smoke]',
+  pathEmbers: '[data-path-ember]',
+  pathGlow: '[data-path-glow]',
   oath: '[data-oath]',
   oathCopy: '[data-oath-copy]',
   oathGlow: '[data-oath-glow]',
@@ -107,12 +106,13 @@ export const useWallMotion = (): RefObject<HTMLElement | null> => {
         const kinetic = context.selector?.(SELECTOR.kinetic)?.[0] as HTMLElement | undefined
         const kineticRows = (context.selector?.(SELECTOR.kineticRows) ?? []) as HTMLElement[]
         const kineticBlade = context.selector?.(SELECTOR.kineticBlade)?.[0] as HTMLElement | undefined
-        const map = context.selector?.(SELECTOR.map)?.[0] as HTMLElement | undefined
-        const mapArt = context.selector?.(SELECTOR.mapArt)?.[0] as SVGSVGElement | undefined
-        const mapRoute = context.selector?.(SELECTOR.mapRoute)?.[0] as SVGPathElement | undefined
-        const mapContours = (context.selector?.(SELECTOR.mapContours) ?? []) as SVGPathElement[]
-        const mapBeacon = context.selector?.(SELECTOR.mapBeacon)?.[0] as SVGCircleElement | undefined
-        const mapBeaconRing = context.selector?.(SELECTOR.mapBeaconRing)?.[0] as SVGCircleElement | undefined
+        const path = context.selector?.(SELECTOR.path)?.[0] as HTMLElement | undefined
+        const pathCopy = context.selector?.(SELECTOR.pathCopy)?.[0] as HTMLElement | undefined
+        const pathLede = context.selector?.(SELECTOR.pathLede)?.[0] as HTMLElement | undefined
+        const pathRidges = (context.selector?.(SELECTOR.pathRidges) ?? []) as HTMLElement[]
+        const pathSmoke = (context.selector?.(SELECTOR.pathSmoke) ?? []) as HTMLElement[]
+        const pathEmbers = (context.selector?.(SELECTOR.pathEmbers) ?? []) as HTMLElement[]
+        const pathGlow = context.selector?.(SELECTOR.pathGlow)?.[0] as HTMLElement | undefined
         const oath = context.selector?.(SELECTOR.oath)?.[0] as HTMLElement | undefined
         const oathCopy = context.selector?.(SELECTOR.oathCopy)?.[0] as HTMLElement | undefined
         const oathGlow = context.selector?.(SELECTOR.oathGlow)?.[0] as HTMLElement | undefined
@@ -506,67 +506,77 @@ export const useWallMotion = (): RefObject<HTMLElement | null> => {
             )
         }
 
-        if (map && mapRoute) {
-          const routeLength = mapRoute.getTotalLength()
-          if (mapArt)
-            gsap.fromTo(
-              mapArt,
-              { yPercent: DISTANCE_MAP_CAMERA_Y, scale: MAP_CAMERA_START_SCALE, transformOrigin: 'center center' },
-              {
-                yPercent: -DISTANCE_MAP_CAMERA_Y,
-                scale: MAP_CAMERA_END_SCALE,
-                ease: EASE_LINEAR,
-                scrollTrigger: { trigger: map, start: SCROLL_TRIGGER_STORY_ENTER, end: SCROLL_TRIGGER_END_EXIT, scrub: SCRUB_SOFT },
-              },
-            )
-          gsap.set(mapRoute, { strokeDasharray: routeLength, strokeDashoffset: routeLength })
-          gsap.to(mapRoute, {
-            strokeDashoffset: 0,
-            ease: EASE_LINEAR,
-            scrollTrigger: {
-              trigger: map,
-              start: SCROLL_TRIGGER_START_PIN,
-              end: SCROLL_TRIGGER_STICKY_END,
-              scrub: SCRUB_SOFT,
-              // scrub smoothing lags behind fast scrolls, so force the line to its
-              // drawn/undrawn end the instant the pin releases either direction.
-              onLeave: () => gsap.set(mapRoute, { strokeDashoffset: 0 }),
-              onLeaveBack: () => gsap.set(mapRoute, { strokeDashoffset: routeLength }),
+        if (path && pathCopy) {
+          // The headline is real, un-split text painted through a two-tone gradient: scrubbing
+          // backgroundPosition sweeps it from dim to lit left-to-right, so it reads with JS off.
+          gsap.fromTo(
+            pathCopy,
+            { backgroundPosition: '100% 0%' },
+            {
+              backgroundPosition: '0% 0%',
+              ease: EASE_LINEAR,
+              scrollTrigger: { trigger: path, start: SCROLL_TRIGGER_START_PIN, end: SCROLL_TRIGGER_STICKY_END, scrub: SCRUB_SOFT },
             },
-          })
-          mapContours.forEach((contour, index) => {
+          )
+          if (pathLede)
             gsap.fromTo(
-              contour,
-              { x: index % 2 === 0 ? -70 : 70 },
+              pathLede,
+              { autoAlpha: 0, y: DISTANCE_REVEAL_Y_LG },
               {
-                x: index % 2 === 0 ? 70 : -70,
+                autoAlpha: 1,
+                y: 0,
                 ease: EASE_LINEAR,
-                scrollTrigger: { trigger: map, start: SCROLL_TRIGGER_STORY_ENTER, end: SCROLL_TRIGGER_END_EXIT, scrub: SCRUB_SOFT },
+                scrollTrigger: {
+                  trigger: path,
+                  start: SCROLL_TRIGGER_STORY_REVEAL_START,
+                  end: SCROLL_TRIGGER_STORY_COPY_END,
+                  scrub: SCRUB_SOFT,
+                },
+              },
+            )
+          // Every layer below shares the copy's exact pin window, so the whole scene
+          // redraws in lockstep with the scrub instead of drifting on its own timer.
+          const pathTrigger = { trigger: path, start: SCROLL_TRIGGER_START_PIN, end: SCROLL_TRIGGER_STICKY_END, scrub: SCRUB_SOFT }
+          pathRidges.forEach((ridge, index) => {
+            gsap.fromTo(
+              ridge,
+              { xPercent: index % 2 === 0 ? -18 : 18, yPercent: 6 },
+              { xPercent: index % 2 === 0 ? 18 : -18, yPercent: 0, ease: EASE_LINEAR, scrollTrigger: pathTrigger },
+            )
+          })
+          pathSmoke.forEach((smoke, index) => {
+            gsap.fromTo(
+              smoke,
+              { yPercent: 30, xPercent: index % 2 === 0 ? -10 : 10, autoAlpha: 0.12, scale: 0.85 },
+              {
+                yPercent: -70 - index * 12,
+                xPercent: index % 2 === 0 ? 10 : -10,
+                autoAlpha: 0.5,
+                scale: 1.15 + index * 0.1,
+                ease: EASE_LINEAR,
+                scrollTrigger: pathTrigger,
               },
             )
           })
-          if (mapBeacon)
+          pathEmbers.forEach((ember, index) => {
             gsap.fromTo(
-              mapBeacon,
-              { scale: 0.25, transformOrigin: 'center' },
+              ember,
+              { yPercent: 70, xPercent: index % 2 === 0 ? -10 : 10, autoAlpha: 0.15, scale: 0.5 },
               {
-                scale: 1.5,
-                transformOrigin: 'center',
+                yPercent: -220,
+                xPercent: index % 2 === 0 ? 14 : -14,
+                autoAlpha: 1,
+                scale: 1.2,
                 ease: EASE_LINEAR,
-                scrollTrigger: { trigger: map, start: SCROLL_TRIGGER_START_PIN, end: SCROLL_TRIGGER_STICKY_END, scrub: SCRUB_SOFT },
+                scrollTrigger: pathTrigger,
               },
             )
-          if (mapBeaconRing)
+          })
+          if (pathGlow)
             gsap.fromTo(
-              mapBeaconRing,
-              { scale: 0.35, autoAlpha: 0.15, transformOrigin: 'center' },
-              {
-                scale: 1.65,
-                autoAlpha: 0.75,
-                transformOrigin: 'center',
-                ease: EASE_LINEAR,
-                scrollTrigger: { trigger: map, start: SCROLL_TRIGGER_START_PIN, end: SCROLL_TRIGGER_STICKY_END, scrub: SCRUB_SOFT },
-              },
+              pathGlow,
+              { autoAlpha: 0.1, scale: 0.8, transformOrigin: 'center bottom' },
+              { autoAlpha: 0.85, scale: 1.3, transformOrigin: 'center bottom', ease: EASE_LINEAR, scrollTrigger: pathTrigger },
             )
         }
 

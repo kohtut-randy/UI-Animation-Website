@@ -5,19 +5,19 @@ export const KineticBridge = () => (
       <div className='border-y border-chalk-100/15 py-4 md:py-6'>
         <p
           data-kinetic-row='left'
-          className='whitespace-nowrap font-display text-[clamp(4rem,18vw,18rem)] font-extrabold leading-[0.76] tracking-[-0.075em] md:text-[clamp(6rem,18vw,18rem)]'
+          className='whitespace-nowrap font-display text-[clamp(4.5rem,14vh,18rem)] font-extrabold leading-[0.76] tracking-[-0.075em] md:text-[clamp(6rem,18vw,18rem)]'
         >
           CARRIES CARRIES CARRIES
         </p>
         <p
           data-kinetic-row='right'
-          className='whitespace-nowrap font-display text-[clamp(4rem,18vw,18rem)] font-extrabold leading-[0.76] tracking-[-0.075em] text-transparent [-webkit-text-stroke:1px_rgba(245,241,232,0.72)] md:text-[clamp(6rem,18vw,18rem)]'
+          className='whitespace-nowrap font-display text-[clamp(4.5rem,14vh,18rem)] font-extrabold leading-[0.76] tracking-[-0.075em] text-transparent [-webkit-text-stroke:1px_rgba(245,241,232,0.72)] md:text-[clamp(6rem,18vw,18rem)]'
         >
           THE WAY THE WAY THE WAY
         </p>
         <p
           data-kinetic-row='left'
-          className='whitespace-nowrap font-display text-[clamp(4rem,18vw,18rem)] font-extrabold leading-[0.76] tracking-[-0.075em] md:text-[clamp(6rem,18vw,18rem)]'
+          className='whitespace-nowrap font-display text-[clamp(4.5rem,14vh,18rem)] font-extrabold leading-[0.76] tracking-[-0.075em] md:text-[clamp(6rem,18vw,18rem)]'
         >
           HOME HOME HOME HOME
         </p>
