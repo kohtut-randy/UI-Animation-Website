@@ -70,7 +70,7 @@ export const Oath = () => {
         <div
           ref={player}
           data-oath-lottie
-          className='absolute left-1/2 top-1/2 size-[min(112vw,52rem)] -translate-x-1/2 -translate-y-1/2 opacity-90 sm:size-[min(90vw,52rem)]'
+          className='absolute left-1/2 top-1/2 size-[min(70vw,24rem)] -translate-x-1/2 -translate-y-1/2 opacity-90 md:size-[min(56vw,30rem)] lg:size-[min(90vw,52rem)]'
         />
         <div data-oath-copy className='gutter relative z-10 w-full text-center'>
           <p className='eyebrow mb-6 text-eyebrow text-jug-400'>The climb</p>
