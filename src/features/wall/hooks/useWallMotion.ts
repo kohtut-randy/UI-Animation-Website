@@ -65,6 +65,7 @@ const SELECTOR = {
   pathCopy: '[data-path-copy]',
   pathLede: '[data-path-lede]',
   pathRidges: '[data-path-ridge]',
+  pathClouds: '[data-path-cloud]',
   pathSmoke: '[data-path-smoke]',
   pathEmbers: '[data-path-ember]',
   pathGlow: '[data-path-glow]',
@@ -110,6 +111,7 @@ export const useWallMotion = (): RefObject<HTMLElement | null> => {
         const pathCopy = context.selector?.(SELECTOR.pathCopy)?.[0] as HTMLElement | undefined
         const pathLede = context.selector?.(SELECTOR.pathLede)?.[0] as HTMLElement | undefined
         const pathRidges = (context.selector?.(SELECTOR.pathRidges) ?? []) as HTMLElement[]
+        const pathClouds = (context.selector?.(SELECTOR.pathClouds) ?? []) as HTMLElement[]
         const pathSmoke = (context.selector?.(SELECTOR.pathSmoke) ?? []) as HTMLElement[]
         const pathEmbers = (context.selector?.(SELECTOR.pathEmbers) ?? []) as HTMLElement[]
         const pathGlow = context.selector?.(SELECTOR.pathGlow)?.[0] as HTMLElement | undefined
@@ -542,6 +544,13 @@ export const useWallMotion = (): RefObject<HTMLElement | null> => {
               ridge,
               { xPercent: index % 2 === 0 ? -18 : 18, yPercent: 6 },
               { xPercent: index % 2 === 0 ? 18 : -18, yPercent: 0, ease: EASE_LINEAR, scrollTrigger: pathTrigger },
+            )
+          })
+          pathClouds.forEach((cloud, index) => {
+            gsap.fromTo(
+              cloud,
+              { xPercent: index % 2 === 0 ? -40 : 40, autoAlpha: 0.35 },
+              { xPercent: index % 2 === 0 ? 60 : -60, autoAlpha: 0.85, ease: EASE_LINEAR, scrollTrigger: pathTrigger },
             )
           })
           pathSmoke.forEach((smoke, index) => {

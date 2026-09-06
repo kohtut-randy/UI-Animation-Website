@@ -1,6 +1,22 @@
 export const PathInterlude = () => (
   <section data-path className='relative h-[220svh] bg-[#ded6c5] text-granite-950'>
     <div className='sticky top-0 flex h-svh items-center overflow-hidden'>
+      <div data-path-cloud aria-hidden='true' className='absolute left-[-8%] top-[9%] flex items-end'>
+        <span className='block size-11 rounded-full bg-[#f8f2e5] shadow-[0_8px_18px_rgba(120,108,92,0.18)]' />
+        <span className='-ml-6 block size-16 rounded-full bg-[#f8f2e5] shadow-[0_8px_18px_rgba(120,108,92,0.18)]' />
+        <span className='-ml-7 block size-10 rounded-full bg-[#f8f2e5] shadow-[0_8px_18px_rgba(120,108,92,0.18)]' />
+      </div>
+      <div data-path-cloud aria-hidden='true' className='absolute left-[38%] top-[17%] flex items-end'>
+        <span className='block size-9 rounded-full bg-[#f8f2e5] shadow-[0_8px_18px_rgba(120,108,92,0.18)]' />
+        <span className='-ml-5 block size-14 rounded-full bg-[#f8f2e5] shadow-[0_8px_18px_rgba(120,108,92,0.18)]' />
+        <span className='-ml-6 block size-8 rounded-full bg-[#f8f2e5] shadow-[0_8px_18px_rgba(120,108,92,0.18)]' />
+      </div>
+      <div data-path-cloud aria-hidden='true' className='absolute left-[68%] top-[7%] flex items-end'>
+        <span className='block size-8 rounded-full bg-[#f8f2e5] shadow-[0_8px_18px_rgba(120,108,92,0.18)]' />
+        <span className='-ml-4 block size-12 rounded-full bg-[#f8f2e5] shadow-[0_8px_18px_rgba(120,108,92,0.18)]' />
+        <span className='-ml-5 block size-7 rounded-full bg-[#f8f2e5] shadow-[0_8px_18px_rgba(120,108,92,0.18)]' />
+      </div>
+
       <div
         data-path-ridge
         aria-hidden='true'
