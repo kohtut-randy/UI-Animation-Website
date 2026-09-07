@@ -1,96 +1,112 @@
 # The Last Ember
 
-An original cinematic samurai tale built for Part 1 of the Rezerv frontend assessment.
-It borrows the reference site's emphasis on full-screen art, sparse text, and continuous
-motion, but uses original artwork, story, layout, and interaction design.
+Part 1 of the Rezerv frontend assessment: a single animation-heavy landing page.
+Same feel as the reference (full-screen art, sparse text, constant motion), but with
+original artwork, story, layout, and interaction design.
 
-**Live URL:** pending deployment
+- **Live:** _pending deployment_
+- **Repo:** https://github.com/myothiha97/crux-landing-page
+- **Reduced motion:** `?motion=reduce`
 
 ## Setup
 
 ```bash
-nvm use
-npm install
-npm run dev
+nvm use && npm install && npm run dev   # http://localhost:5173
 ```
 
-Useful checks:
+Node `^20.19 || >=22.12`. Checks: `npm run lint`, `npm run typecheck`, `npm run build`.
 
-```bash
-npm run lint
-npm run typecheck
-npm run build
-```
+## The 3 sections
 
-## Implemented experience
+The brief calls these "slides/sections". This page is one continuously scrolling story,
+so they are full-height scroll sections, not a slide deck: nothing advances by click or
+step, and there is no per-slide pagination.
 
-1. **Preloader:** Canvas forge sparks, an SVG blade progress path, real weighted asset
-   progress, and a curtain transition.
-2. **Hero:** the ronin enters a storm through staged title motion, live rain, water
-   ripples, drifting embers, mist, and layered image parallax.
-3. **Story:** four long, pinned chapters use distinct original artwork, weather layers,
-   depth parallax, painted wipes, and scene-specific pacing.
-4. **Interludes:** kinetic typography, a scroll-drawn SVG map, and a full-screen
-   scroll-controlled Lottie torii gate change the visual rhythm between chapters.
-5. **Finale:** a Canvas sword trail reveals a live field of smoke and embers that keeps
-   burning after scrolling stops.
+| # | Section | Where | What it does |
+|---|---|---|---|
+| 1 | Loading screen | `index.html` loader + `features/preloader` | Canvas forge sparks, SVG blade progress path, real weighted asset progress, curtain transition. |
+| 2 | Hero | `features/hero` | Staged title motion, live rain, water ripples, drifting embers, mist, layered image parallax. |
+| 3 | Content / collection | `features/wall` | Four pinned story chapters, three interludes, one finale (below). |
 
-## Libraries
+Section 3 is one continuous scroll, not several stacked scenes. Each chapter has its
+own artwork, weather layers, depth parallax, painted wipe, and pacing. Between them,
+three interludes break the rhythm: kinetic typography, a scroll-drawn SVG map, and a
+scroll-scrubbed Lottie torii gate. The finale draws a canvas sword trail that reveals a
+live smoke and ember field, which keeps burning after scrolling stops.
 
-- React and TypeScript for structure and strict component contracts.
-- GSAP and ScrollTrigger for entrance timelines, pinning, scrub, and parallax.
-- Lenis for smooth desktop wheel scrolling on capable devices.
-- Lottie Web light player for the original animated oath gate.
-- Tailwind CSS v4 for the token-driven visual system.
+No routing, no navigation, no working CTAs, as the brief requires.
 
-The artwork is original and generated for this project. It does not use characters,
-assets, logos, or compositions from Ghost of Tsushima or the assessment reference.
+## Libraries and why
 
-## Motion approach
+| Library | Why |
+|---|---|
+| React 19 + TypeScript | One clear feature boundary per section, typed component contracts. |
+| GSAP + ScrollTrigger | Covers entrance timelines, pinning, scrub, and parallax in one timeline model. `gsap.matchMedia()` also reverts pins cleanly on resize. |
+| Lenis | Smooth wheel scrolling on desktop only, so it never fights native touch momentum. |
+| lottie-web (light) | The oath gate is a Lottie scene. The light build drops the unused expression engine. |
+| Tailwind CSS v4 | Token-driven visual system in one layer. |
+| class-variance-authority | The button has two real variant axes (tone, size), where ternaries stop being readable. |
 
-The main effects are intentionally visible:
+All artwork is original and generated for this project.
 
-- The hero image zooms into place as the title rises.
-- The scene, mist, foreground, copy, rain, ripples, and embers move at different rates.
-- Each full-screen chapter stays pinned while its image, foreground, weather, number,
-  copy, and ink wash move at separate rates.
-- Oversized text rows travel in opposing directions through the kinetic bridge.
-- A native SVG route draws itself as the user crosses the map.
-- The Lottie oath advances frame by frame from scroll progress.
-- The final sword trail draws with scroll while the ember field continues in real time.
+## Animation, smooth scroll, responsiveness
 
-All scroll-linked motion uses transforms and opacity. GSAP media contexts rebuild motion
-at breakpoints. The assessment runs full motion by default. `?motion=reduce` provides
-an explicit static mode.
+Scroll-linked motion animates `transform` and `opacity` only. GSAP owns scroll position
+and choreography. Lottie only supplies frames.
 
-## Loading and performance
+**Smooth scroll.** Lenis is a dynamic import, desktop pointers only. Touch keeps native
+momentum.
 
-- The preloader exists before the JavaScript bundle and waits for decoded story art and
-  the Lottie data.
+**Hover.** Always a CSS transition, never GSAP. It is compositor-driven, needs no
+listener, works before hydration, and stops GSAP from tweening a property that also
+carries a transition. Buttons are real `<button>` elements with `focus-visible` rings
+and no `onClick`. See `shared/components/Button.tsx`, `HoldCard.tsx`.
+
+**Resize.** No resize listener anywhere. `gsap.matchMedia()` is the breakpoint *and* the
+resize strategy: on any condition change it reverts what was built inside it, which
+removes pins and pin-spacers cleanly, then rebuilds.
+
+Breakpoints live in `constants/breakpoints.ts` and mirror Tailwind v4 defaults:
+
+| Range | Behaviour |
+|---|---|
+| `< 768px` | Native scroll, sticky scenes instead of pins, lighter motion. |
+| `768–1023px` | Sticky chapters, scroll-linked depth. |
+| `≥ 1024px` | Lenis smoothing, full motion system. |
+
+Checked 320x700 to 1920x1080. No overflow, no console errors.
+
+## Performance
+
+- The loader is inline in `index.html`, so the bar moves on first paint while the bundle
+  is still downloading. It waits on decoded story art and Lottie data, weighted by size.
 - A watchdog reveals the page if JavaScript or an asset fails.
-- Lottie and Lenis are dynamic imports.
-- The light Lottie player is used instead of the full expression player.
-- GSAP and React are separate cached chunks.
-- Scroll handlers do not read layout. SVG path length is measured once during setup.
-- Explicit reduced mode creates no pin or scrub effects.
+- Device tier (cores, memory, `saveData`, coarse pointer) is measured up front and
+  written to `data-tier`, so weak devices degrade instead of janking.
+- Lottie and Lenis are dynamic imports. GSAP and React are separate cached chunks.
+- Story art past the first plate is `loading="lazy"` and decodes async.
+- Scroll handlers never read layout. SVG path length is measured once, at setup.
 
-Current production build passes lint and TypeScript. Browser checks from 320 x 700 to
-1920 x 1080 report no overflow or console errors.
-
-## Responsive behavior
-
-- Mobile: native vertical scrolling, sticky scenes, and lighter motion.
-- Tablet: sticky chapters and scroll-linked depth.
-- Desktop: Lenis smoothing and the full motion system.
+Reduced motion is one attribute, `<html data-motion-mode>`, set before first paint and
+read by CSS, by every GSAP context, and by the canvas fields. It kills pins, scrubs,
+particles, and Lenis together.
 
 ## Assumptions
 
-- The brief allows original subject matter and artwork.
-- “Match the feel” means matching motion ambition and pacing, not copying the reference.
-- Buttons do not navigate, as required.
-- Lottie supports the scene, while GSAP owns scroll position and choreography.
+- Original subject matter and artwork are allowed. "Match the feel" means matching
+  motion ambition and pacing, not copying the reference.
+- One long content section serves "one content/collection section" better than three
+  shallow ones.
+- Buttons hover and click but navigate nowhere, as required.
+- **The OS `prefers-reduced-motion` flag is not read.** This demo is judged on its
+  motion, and a reviewer with that flag on would otherwise see a static page. Full
+  motion is the default; `?motion=reduce` opts in. The reduced path is fully built in
+  three layers (CSS durations, a `reduce` flag in every GSAP hook, and module-level
+  skipping of Lenis and the canvases). Honouring the OS setting in a real product is a
+  one-line change in the `index.html` bootstrap.
 
 ## Known limits
 
-- Deployment and the final live URL are still pending.
-- Mobile keeps native touch momentum instead of forcing desktop-style smooth scrolling.
+- Deployment and the live URL are pending.
+- Reduced mode is reachable only through `?motion=reduce`.
+- Mobile keeps native touch momentum instead of forced smooth scrolling.
