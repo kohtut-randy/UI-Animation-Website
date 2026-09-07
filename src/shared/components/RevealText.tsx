@@ -21,17 +21,9 @@ export type RevealTextProps = {
 }
 
 export const RevealText = ({ lines, className, lineClassName }: RevealTextProps) => (
-  <span className={cn('flex flex-col', className)}>
+  <span className={cn('flex flex-col items-start', className)}>
     {lines.map(line => (
-      // The clip box. overflow-hidden is what makes translateY(110%) read as "below
-      // the line" rather than "shifted down the page".
-      <span key={line} className='block overflow-hidden pb-[0.08em]'>
-        {/* The translateY offset lives in base.css behind html[data-motion='on'], not
-            here, so the line is visible if the bundle never runs. */}
-        {/* No will-change class here on purpose. The entrance timeline promotes these
-            lines for the duration of the rise and releases them onComplete, so a
-            permanent class would leave the biggest painted element on the page holding
-            a GPU layer for the whole session. */}
+      <span key={line} className='inline-block overflow-hidden pb-[0.08em] w-auto  hover:text-[#880808] cursor-pointer'>
         <span data-reveal-line className={cn('block', lineClassName)}>
           {line}
         </span>

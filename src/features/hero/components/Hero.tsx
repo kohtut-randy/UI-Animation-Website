@@ -45,7 +45,7 @@ export const Hero = () => {
               <RevealText lines={HEADLINE_MOBILE} className='md:hidden' />
               <RevealText lines={HEADLINE_DESKTOP} className='hidden md:flex' />
             </h1>
-            <p data-hero-lede className='mt-7 max-w-[34ch] text-lede text-chalk-100/74'>
+            <p data-hero-lede className='mt-7 max-w-[34ch] text-lede text-chalk-100/74 hover:text-jug-400 cursor-pointer'>
               When his village falls, a nameless ronin carries its final ember toward the Shrine of First Light.
             </p>
             <div data-hero-cta className='mt-8 flex items-center gap-5'>
