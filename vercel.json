@@ -4,7 +4,7 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
-      "source": "/((?!assets/|fonts/|favicon.svg|robots.txt|wall-texture.webp|ronin-sword-hero.jpg|ember-village.jpg|ember-storm.jpg|ember-river.jpg|ember-dawn.jpg|oath-gate.json).*)",
+      "source": "/((?!assets/|fonts/|favicon.svg|mouse.svg|mouse_ac.svg|robots.txt|wall-texture.webp|ronin-sword-hero.jpg|ember-village.jpg|ember-storm.jpg|ember-river.jpg|ember-dawn.jpg|oath-gate.json).*)",
       "destination": "/index.html"
     }
   ],

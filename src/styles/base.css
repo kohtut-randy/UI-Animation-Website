@@ -24,6 +24,9 @@ body {
   color: var(--ink);
   overscroll-behavior: none;
   -webkit-font-smoothing: antialiased;
+  cursor:
+    url('/mouse_ac.svg') 9 1,
+    auto;
 }
 
 /* PINNING CONSTRAINT. DO NOT VIOLATE.

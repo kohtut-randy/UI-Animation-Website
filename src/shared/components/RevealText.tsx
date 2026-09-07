@@ -23,7 +23,7 @@ export type RevealTextProps = {
 export const RevealText = ({ lines, className, lineClassName }: RevealTextProps) => (
   <span className={cn('flex flex-col items-start', className)}>
     {lines.map(line => (
-      <span key={line} className='inline-block overflow-hidden pb-[0.08em] w-auto  hover:text-[#880808] cursor-pointer'>
+      <span key={line} className='inline-block overflow-hidden pb-[0.08em] w-auto  hover:text-[#880808] '>
         <span data-reveal-line className={cn('block', lineClassName)}>
           {line}
         </span>
