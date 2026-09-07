@@ -95,6 +95,15 @@ export const GSAP_LAG_SMOOTHING_DISABLED = 0
 export const GSAP_LAG_SMOOTHING_THRESHOLD_MS = 500
 export const GSAP_LAG_SMOOTHING_ADJUSTED_MS = 33
 
+/* CUSTOM CURSOR. The trailing pointer image eases toward the real cursor position
+   instead of snapping to it. Lower = more lag/slower catch-up, matches LENIS_LERP's
+   scale (0 to 1). Hotspot and size mirror the tip position baked into public/mouse.svg
+   and public/mouse_ac.svg (both rotated -25deg around a 256x256 viewBox, tip at (128,0)). */
+export const CURSOR_LERP = 0.12
+export const CURSOR_SIZE = 30
+export const CURSOR_HOTSPOT_X = 9
+export const CURSOR_HOTSPOT_Y = 1
+
 /* THE FPS GUARD. Second stage of the two-stage degradation strategy: the pre-paint tier
    probe in index.html catches devices that are predictably slow, and this catches the
    ones that turn out to be slow in practice (a hot phone, a busy tab, a cheap GPU).
