@@ -1,5 +1,3 @@
-import { useRef } from 'react'
-import type { PointerEvent } from 'react'
 import { useHeroMotion } from 'features/hero/hooks'
 import { RevealText, ScrollCue } from 'shared/components'
 import { Header } from './Header'
@@ -10,36 +8,10 @@ const HEADLINE_DESKTOP = ['Walk into', 'the storm.'] as const
 
 export const Hero = () => {
   const scope = useHeroMotion()
-  const glowFrame = useRef<number>(0)
-
-  /* Mouse only, and read-then-write so this never forces a layout: the rect read
-     happens before the single style write, both inside one rAF tick. */
-  const trackGlow = (event: PointerEvent<HTMLDivElement>): void => {
-    if (event.pointerType !== 'mouse') return
-    const target = event.currentTarget
-    const { clientX, clientY } = event
-
-    cancelAnimationFrame(glowFrame.current)
-    glowFrame.current = requestAnimationFrame(() => {
-      const rect = target.getBoundingClientRect()
-      target.style.setProperty('--glow-x', `${((clientX - rect.left) / rect.width) * 100}%`)
-      target.style.setProperty('--glow-y', `${((clientY - rect.top) / rect.height) * 100}%`)
-    })
-  }
-
-  const resetGlow = (event: PointerEvent<HTMLDivElement>): void => {
-    cancelAnimationFrame(glowFrame.current)
-    event.currentTarget.style.removeProperty('--glow-x')
-    event.currentTarget.style.removeProperty('--glow-y')
-  }
 
   return (
     <section ref={scope} id='hero' className='relative h-[190svh] h-[190dvh] bg-granite-950 text-chalk-100'>
-      <div
-        className='group sticky top-0 isolate h-svh h-dvh min-h-[640px] overflow-hidden'
-        onPointerMove={trackGlow}
-        onPointerLeave={resetGlow}
-      >
+      <div className='group sticky top-0 isolate h-svh h-dvh min-h-[640px] overflow-hidden'>
         <Header />
 
         <div data-hero-scene aria-hidden='true' className='absolute inset-[-8%] -z-20'>
@@ -51,23 +23,6 @@ export const Hero = () => {
             height={941}
             fetchPriority='high'
             className='size-full object-cover object-[78%_center] md:object-[76%_center] xl:object-center transition-[filter] duration-(--duration-base) ease-(--ease-power2-out) group-hover:saturate-125 group-hover:contrast-105 group-hover:brightness-105'
-          />
-          {/* Own layer, opacity + background-position only: GSAP already owns transform on
-              this image and its scene wrapper, so the spotlight never touches that property. */}
-          <div
-            className='pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-(--duration-base) ease-(--ease-power2-out) group-hover:opacity-100'
-            style={{
-              backgroundImage:
-                'radial-gradient(28rem circle at var(--glow-x, 50%) var(--glow-y, 38%), rgba(255,205,150,0.4), rgba(255,150,80,0.12) 45%, transparent 68%)',
-            }}
-          />
-          {/* A slightly larger, dimmer second layer gives the glow depth instead of one flat wash. */}
-          <div
-            className='pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-(--duration-slow) ease-(--ease-power2-out) group-hover:opacity-100'
-            style={{
-              backgroundImage:
-                'radial-gradient(48rem circle at var(--glow-x, 50%) var(--glow-y, 38%), rgba(255,120,60,0.16), transparent 70%)',
-            }}
           />
         </div>
         <div
