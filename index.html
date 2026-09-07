@@ -119,16 +119,19 @@
       #loader-mark span {
         display: block;
         transform: translate3d(0, 110%, 0);
-        animation: crux-rise 900ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation: crux-rise 1200ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
       }
       #loader-mark span:nth-child(2) {
-        animation-delay: 70ms;
+        animation-delay: 110ms;
       }
       #loader-mark span:nth-child(3) {
-        animation-delay: 140ms;
+        animation-delay: 220ms;
       }
       #loader-mark span:nth-child(4) {
-        animation-delay: 210ms;
+        animation-delay: 330ms;
+      }
+      #loader-mark span:nth-child(5) {
+        animation-delay: 440ms;
       }
       @keyframes crux-rise {
         to {
@@ -209,7 +212,21 @@
         var saveData = nav.connection && nav.connection.saveData
         var coarse = matchMedia('(pointer: coarse)').matches
         document.documentElement.dataset.tier = saveData || cores <= 4 || memory <= 4 || (coarse && cores <= 6) ? 'low' : 'high'
-        document.documentElement.dataset.motionMode = new URLSearchParams(location.search).get('motion') === 'reduce' ? 'reduce' : 'full'
+
+        /* Motion mode, also before the first paint, for the same reason.
+
+           DELIBERATE: the OS `prefers-reduced-motion` setting is NOT read here. This is
+           a motion demo, so a reviewer whose machine has the accessibility flag on would
+           otherwise open a static page and see none of the work being assessed. Full
+           motion is therefore the default for everyone, and `?motion=reduce` is the way
+           into the reduced build.
+
+           The reduced path itself is fully implemented and driven by this one attribute
+           (CSS, every gsap.matchMedia branch, and the canvas fields all read it), so
+           honouring the OS preference is a one-line change here: default `wantsReduce`
+           to matchMedia('(prefers-reduced-motion: reduce)').matches instead of false. */
+        var motionOverride = new URLSearchParams(location.search).get('motion')
+        document.documentElement.dataset.motionMode = motionOverride === 'reduce' ? 'reduce' : 'full'
       })()
 
       /* 3 - The loader bridge, the only global this app creates. The bundle talks to
@@ -230,9 +247,14 @@
       window.CRUX_LOADER = (function () {
         var FLOOR_MAX_WAIT_MS = 6000
         var FLOOR_CAP = 0.9
+        var PACE_MS = 3400
+        var EMBER_COUNT = 96
+        var EMBER_GLOW_SPREAD = 4.5
+        var SPRITE_PX = 64
 
         var blade,
           spark,
+          sprite,
           count,
           phase,
           canvas,
@@ -251,6 +273,37 @@
         function floor() {
           var t = Math.min(1, (performance.now() - startedAt) / FLOOR_MAX_WAIT_MS)
           return (1 - (1 - t) * (1 - t)) * FLOOR_CAP
+        }
+
+        /* A CEILING on the same bar, and the reason the brand moment is a moment. On a
+           warm cache every asset reports in under a second, the counter snapped to 100
+           and the splash then SAT there, still, until MIN_DISPLAY let it go: the blade
+           finished before anyone had looked at it. Pacing the bar means the same wait is
+           spent drawing rather than waiting. Mirrors PRELOADER_MIN_DISPLAY_MS. */
+        function pace() {
+          var t = Math.min(1, (performance.now() - startedAt) / PACE_MS)
+          return t * t * (3 - 2 * t) // smoothstep: eases in and out, so the blade draws at an even pace
+        }
+
+        /* One ember, painted once and stamped per particle: a gradient per particle per
+           frame is what makes a dense field expensive. Mirrors shared/lib/emberSprite.ts,
+           which the page's own scenes use; this shell cannot import it. */
+        function emberSprite() {
+          if (sprite) return sprite
+          sprite = document.createElement('canvas')
+          sprite.width = SPRITE_PX
+          sprite.height = SPRITE_PX
+          var spriteContext = sprite.getContext('2d')
+          if (!spriteContext) return sprite
+          var center = SPRITE_PX / 2
+          var glow = spriteContext.createRadialGradient(center, center, 0, center, center, center)
+          glow.addColorStop(0, 'rgba(255, 246, 219, 1)')
+          glow.addColorStop(0.16, 'rgba(255, 209, 126, 0.92)')
+          glow.addColorStop(0.4, 'rgba(251, 155, 0, 0.45)')
+          glow.addColorStop(1, 'rgba(210, 48, 20, 0)')
+          spriteContext.fillStyle = glow
+          spriteContext.fillRect(0, 0, SPRITE_PX, SPRITE_PX)
+          return sprite
         }
 
         function drawSparks(now) {
@@ -275,18 +328,21 @@
           canvasContext.fillStyle = haze
           canvasContext.fillRect(0, 0, width, height)
 
+          var ember = emberSprite()
           canvasContext.globalCompositeOperation = 'screen'
-          for (var index = 0; index < 54; index += 1) {
+          for (var index = 0; index < EMBER_COUNT; index += 1) {
+            var depth = 0.35 + ((index * 29) % 65) / 100
             var life = (now * 0.00016 + index * 0.073 + shown * 0.24) % 1
-            var x = width * (0.12 + (((index * 37) % 77) / 100) * 0.98) + Math.sin(now * 0.001 + index) * 18
-            var y = height * (0.86 - life * 0.72)
-            var alpha = Math.sin(life * Math.PI) * (0.12 + shown * 0.42)
-            var size = 0.7 + ((index * 11) % 18) / 10
-            canvasContext.beginPath()
-            canvasContext.fillStyle = 'rgba(251, 155, 0, ' + alpha + ')'
-            canvasContext.arc(x, y, size, 0, Math.PI * 2)
-            canvasContext.fill()
+            var x = width * (0.08 + (((index * 37) % 77) / 100) * 1.04) + Math.sin(now * 0.001 + index) * (16 + depth * 18)
+            var y = height * (0.9 - life * 0.78)
+            // each ember breathes on its own clock, so the field never pulses as one
+            var flicker = 0.72 + Math.sin(now * 0.002 * (1 + depth) + index * 2.1) * 0.28
+            var alpha = Math.sin(life * Math.PI) * (0.2 + shown * 0.5) * flicker
+            var glowSize = (1.5 + ((index * 11) % 18) / 10) * EMBER_GLOW_SPREAD * depth
+            canvasContext.globalAlpha = alpha
+            canvasContext.drawImage(ember, x - glowSize, y - glowSize, glowSize * 2, glowSize * 2)
           }
+          canvasContext.globalAlpha = 1
           canvasContext.globalCompositeOperation = 'source-over'
         }
 
@@ -309,7 +365,7 @@
             return
           }
 
-          var target = floorActive ? Math.max(real, floor()) : real
+          var target = Math.min(floorActive ? Math.max(real, floor()) : real, pace())
 
           /* An eased follower, not a direct write. Two properties fall out of it that
              a naive bar does not have: it never jumps backwards (both inputs are
