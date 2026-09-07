@@ -4,8 +4,8 @@ Part 1 of the Rezerv frontend assessment: a single animation-heavy landing page.
 Same feel as the reference (full-screen art, sparse text, constant motion), but with
 original artwork, story, layout, and interaction design.
 
-- **Live:** _pending deployment_
-- **Repo:** https://github.com/myothiha97/crux-landing-page
+- **Live:** https://animation-website-sooty-sigma.vercel.app/
+- **Repo:** https://github.com/kohtut-randy/UI-Animation-Website
 - **Reduced motion:** `?motion=reduce`
 
 ## Setup
@@ -22,11 +22,11 @@ The brief calls these "slides/sections". This page is one continuously scrolling
 so they are full-height scroll sections, not a slide deck: nothing advances by click or
 step, and there is no per-slide pagination.
 
-| # | Section | Where | What it does |
-|---|---|---|---|
-| 1 | Loading screen | `index.html` loader + `features/preloader` | Canvas forge sparks, SVG blade progress path, real weighted asset progress, curtain transition. |
-| 2 | Hero | `features/hero` | Staged title motion, live rain, water ripples, drifting embers, mist, layered image parallax. |
-| 3 | Content / collection | `features/wall` | Four pinned story chapters, three interludes, one finale (below). |
+| #   | Section              | Where                                      | What it does                                                                                    |
+| --- | -------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------------- |
+| 1   | Loading screen       | `index.html` loader + `features/preloader` | Canvas forge sparks, SVG blade progress path, real weighted asset progress, curtain transition. |
+| 2   | Hero                 | `features/hero`                            | Staged title motion, live rain, water ripples, drifting embers, mist, layered image parallax.   |
+| 3   | Content / collection | `features/wall`                            | Four pinned story chapters, three interludes, one finale (below).                               |
 
 Section 3 is one continuous scroll, not several stacked scenes. Each chapter has its
 own artwork, weather layers, depth parallax, painted wipe, and pacing. Between them,
@@ -38,14 +38,14 @@ No routing, no navigation, no working CTAs, as the brief requires.
 
 ## Libraries and why
 
-| Library | Why |
-|---|---|
-| React 19 + TypeScript | One clear feature boundary per section, typed component contracts. |
-| GSAP + ScrollTrigger | Covers entrance timelines, pinning, scrub, and parallax in one timeline model. `gsap.matchMedia()` also reverts pins cleanly on resize. |
-| Lenis | Smooth wheel scrolling on desktop only, so it never fights native touch momentum. |
-| lottie-web (light) | The oath gate is a Lottie scene. The light build drops the unused expression engine. |
-| Tailwind CSS v4 | Token-driven visual system in one layer. |
-| class-variance-authority | The button has two real variant axes (tone, size), where ternaries stop being readable. |
+| Library                  | Why                                                                                                                                     |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| React 19 + TypeScript    | One clear feature boundary per section, typed component contracts.                                                                      |
+| GSAP + ScrollTrigger     | Covers entrance timelines, pinning, scrub, and parallax in one timeline model. `gsap.matchMedia()` also reverts pins cleanly on resize. |
+| Lenis                    | Smooth wheel scrolling on desktop only, so it never fights native touch momentum.                                                       |
+| lottie-web (light)       | The oath gate is a Lottie scene. The light build drops the unused expression engine.                                                    |
+| Tailwind CSS v4          | Token-driven visual system in one layer.                                                                                                |
+| class-variance-authority | The button has two real variant axes (tone, size), where ternaries stop being readable.                                                 |
 
 All artwork is original and generated for this project.
 
@@ -62,17 +62,17 @@ listener, works before hydration, and stops GSAP from tweening a property that a
 carries a transition. Buttons are real `<button>` elements with `focus-visible` rings
 and no `onClick`. See `shared/components/Button.tsx`, `HoldCard.tsx`.
 
-**Resize.** No resize listener anywhere. `gsap.matchMedia()` is the breakpoint *and* the
+**Resize.** No resize listener anywhere. `gsap.matchMedia()` is the breakpoint _and_ the
 resize strategy: on any condition change it reverts what was built inside it, which
 removes pins and pin-spacers cleanly, then rebuilds.
 
 Breakpoints live in `constants/breakpoints.ts` and mirror Tailwind v4 defaults:
 
-| Range | Behaviour |
-|---|---|
-| `< 768px` | Native scroll, sticky scenes instead of pins, lighter motion. |
-| `768–1023px` | Sticky chapters, scroll-linked depth. |
-| `≥ 1024px` | Lenis smoothing, full motion system. |
+| Range        | Behaviour                                                     |
+| ------------ | ------------------------------------------------------------- |
+| `< 768px`    | Native scroll, sticky scenes instead of pins, lighter motion. |
+| `768–1023px` | Sticky chapters, scroll-linked depth.                         |
+| `≥ 1024px`   | Lenis smoothing, full motion system.                          |
 
 Checked 320x700 to 1920x1080. No overflow, no console errors.
 
