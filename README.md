@@ -91,6 +91,17 @@ Reduced motion is one attribute, `<html data-motion-mode>`, set before first pai
 read by CSS, by every GSAP context, and by the canvas fields. It kills pins, scrubs,
 particles, and Lenis together.
 
+## Note for reviewers: macOS "Reduce Motion"
+
+If **System Settings → Accessibility → Display → Reduce Motion** is on, Safari and
+Chrome on macOS can suppress some CSS transitions and throttle or skip scroll-linked
+effects at the browser/OS level — separately from this site's own reduced-motion
+handling, which is off by default (see Assumptions below). This can make the motion
+look muted or missing even though nothing is broken.
+
+To see the full experience, turn Reduce Motion off before reviewing, or visit with
+`?motion=reduce` if you'd rather review the intentionally reduced path instead.
+
 ## Assumptions
 
 - Original subject matter and artwork are allowed. "Match the feel" means matching

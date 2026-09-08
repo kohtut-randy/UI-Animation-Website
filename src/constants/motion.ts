@@ -86,12 +86,6 @@ export const GSAP_LAG_SMOOTHING_DISABLED = 0
 export const GSAP_LAG_SMOOTHING_THRESHOLD_MS = 500
 export const GSAP_LAG_SMOOTHING_ADJUSTED_MS = 33
 
-/* CUSTOM CURSOR. Lower CURSOR_LERP = more lag. Hotspot matches the tip baked into public/mouse*.svg. */
-export const CURSOR_LERP = 0.12
-export const CURSOR_SIZE = 30
-export const CURSOR_HOTSPOT_X = 9
-export const CURSOR_HOTSPOT_Y = 1
-
 /* FPS GUARD: second degradation stage after index.html's pre-paint tier probe, catches devices that turn out slow in practice. */
 export const FPS_BUDGET = 50 // below this for FPS_STRIKES windows and decoration stops
 export const FPS_SAMPLE_WINDOW_MS = 1000
