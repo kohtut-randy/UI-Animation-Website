@@ -1,6 +1,4 @@
-/* Lenis configuration, one named constant per option, with the reason in the comment.
-   Several of these are "deliberately not set", which is itself a decision: `duration`
-   and `easing` are mutually exclusive with `lerp`, and setting both is a config bug. */
+/* One named constant per Lenis option; `duration`/`easing` are deliberately unset since both are mutually exclusive with `lerp`. */
 
 /** Framerate-independent catch-up ratio. Composes predictably with ScrollTrigger scrub. */
 export const LENIS_LERP = 0.08
@@ -12,10 +10,7 @@ export const LENIS_GESTURE_ORIENTATION = 'vertical' as const
 /** The entire reason Lenis is here: reconciling trackpad and notched-wheel granularity. */
 export const LENIS_SMOOTH_WHEEL = true
 
-/* OFF, and this is a clear position rather than a default left alone. syncTouch moves
-   touch scrolling onto the main thread by preventDefault-ing touchmove, which loses OS
-   momentum (the biggest jank source on mid-tier Android) and fights iOS rubber-banding.
-   Native touch scrolling is already good. */
+/** OFF: syncTouch loses OS momentum on Android and fights iOS rubber-banding. Native touch scrolling is already good. */
 export const LENIS_SYNC_TOUCH = false
 
 /** Higher overshoots the pinned rail per notch; lower feels sticky. */

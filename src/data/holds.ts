@@ -1,11 +1,6 @@
 import type { HoldColor, HoldShape } from 'shared/types'
 
-/* Mock data. Twelve holds, which is the wall's full set and the count the pinned rail
-   scrubs through. Grades follow the Fontainebleau scale a real bouldering gym uses.
-
-   This is the only domain data in the project, and it is deliberately plain: the
-   sections read it, nothing writes it, and no component knows where it came from. */
-
+/* Mock data: the wall's full 12-hold set, the count the pinned rail scrubs through. Grades follow the Fontainebleau scale. */
 export type Hold = {
   id: string
   name: string

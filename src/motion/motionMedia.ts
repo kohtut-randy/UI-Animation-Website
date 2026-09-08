@@ -11,13 +11,7 @@ import type { MediaFlags } from 'shared/types'
 import { prefersReducedMotion } from 'shared/lib/reducedMotion'
 import { gsap } from './gsapClient'
 
-/* gsap.matchMedia() is BOTH the reduced-motion strategy and the resize strategy, which
-   is why there is no resize listener anywhere in this codebase. It does three things
-   nothing else does: it takes an object of named conditions and runs one callback per
-   matching combination; it reverts everything created inside on any condition change
-   (killing pins and removing pin-spacers cleanly); and it re-runs.
-
-   ScrollTrigger.matchMedia() is deprecated in favour of it as of GSAP 3.11. */
+/* gsap.matchMedia() is both the reduced-motion and resize strategy (no resize listener exists anywhere): it runs one callback per matching condition set and reverts cleanly on change. */
 
 const CONDITIONS = {
   isMobile: MEDIA_QUERY_MOBILE,

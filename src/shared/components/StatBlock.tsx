@@ -6,10 +6,7 @@ export type StatBlockProps = {
   className?: string
 }
 
-/* Renders dt/dd so a group of these is a real description list, not a grid of divs
-   with a list role bolted on. `dt` has to precede `dd` in the markup, and the value
-   reads better above the label, so the visual order is flipped with
-   flex-col-reverse rather than by breaking the semantics. */
+// dt/dd for a real description list; visual order flipped with flex-col-reverse rather than by breaking dt-before-dd semantics.
 export const StatBlock = ({ value, label, className }: StatBlockProps) => (
   <div className={cn('flex flex-col-reverse gap-1', className)}>
     <dt className='eyebrow text-eyebrow text-ink-subtle'>{label}</dt>

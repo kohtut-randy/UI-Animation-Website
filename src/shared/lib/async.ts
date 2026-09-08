@@ -1,10 +1,7 @@
 /** Resolves after `ms`. */
 export const delay = (ms: number): Promise<void> => new Promise(resolve => window.setTimeout(resolve, ms))
 
-/**
- * Resolves after `count` animation frames have been painted. Two frames is the honest
- * definition of "the browser has actually shown this": one to commit, one to paint.
- */
+/** Resolves after `count` painted animation frames (two = committed and actually painted). */
 export const nextFrames = (count: number): Promise<void> =>
   new Promise(resolve => {
     let remaining = Math.max(1, count)
@@ -19,10 +16,7 @@ export const nextFrames = (count: number): Promise<void> =>
     requestAnimationFrame(step)
   })
 
-/**
- * Rejects if `promise` has not settled within `ms`. Used per asset, so one hanging
- * request cannot hold the whole manifest open.
- */
+/** Rejects if `promise` hasn't settled within `ms`; used per asset so one hanging request can't hold the manifest open. */
 export const withTimeout = <T>(promise: Promise<T>, ms: number): Promise<T> =>
   new Promise((resolve, reject) => {
     const timer = window.setTimeout(() => reject(new Error(`timed out after ${ms}ms`)), ms)
@@ -44,12 +38,7 @@ export const waitForWindowLoad = (): Promise<void> =>
     ? Promise.resolve()
     : new Promise(resolve => window.addEventListener('load', () => resolve(), { once: true }))
 
-/**
- * Runs `callback` on the element's next transitionend, or after `fallbackMs` if the
- * event never arrives. A transition that is interrupted, or whose property was never
- * actually animated, fires nothing at all, and the loader would then stay in the DOM
- * covering the page forever. Exactly one of the two paths ever runs.
- */
+/** Runs `callback` on the element's next transitionend, or after `fallbackMs` if an interrupted/never-animated transition fires nothing. Exactly one path ever runs. */
 export const onTransitionEnd = (element: HTMLElement, fallbackMs: number, callback: () => void): void => {
   let done = false
 

@@ -2,9 +2,7 @@ import { cn } from 'shared/lib'
 
 export type ScrollCueProps = { className?: string; label?: string }
 
-/* Decorative, so the animation is a CSS keyframe rather than a tween: it is one idle
-   loop that no other system needs to coordinate with, and CSS keyframes keep it off
-   the GSAP timeline entirely. The reduced-motion block in base.css stops it. */
+// Decorative idle loop: a CSS keyframe, not a GSAP tween, so it never joins the timeline. base.css's reduced-motion block stops it.
 export const ScrollCue = ({ className, label = 'Scroll' }: ScrollCueProps) => (
   <div className={cn('flex items-center gap-3 text-ink-subtle', className)}>
     <span className='eyebrow text-eyebrow'>{label}</span>

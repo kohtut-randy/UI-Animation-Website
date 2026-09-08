@@ -3,13 +3,7 @@ import { withTimeout } from 'shared/lib'
 import { buildAssetManifest } from './assetManifest'
 
 /**
- * Runs the manifest and reports weighted progress. Every task is individually
- * timed out and individually swallowed, so a dead or 404'd asset can never block
- * the page: the weight is credited in `finally` either way.
- *
- * This is the narrow exception to the no-broad-catch rule, and it is deliberate. The
- * thing being caught is "one decorative asset did not arrive", which is not a bug to
- * propagate, and the alternative is a visitor stuck behind a curtain.
+ * Runs the manifest and reports weighted progress. Every task is individually timed out and swallowed so a dead/404'd asset never blocks the page (weight credited in `finally` regardless).
  */
 export const preloadAssets = async (onProgress: (progress: number) => void): Promise<void> => {
   const tasks = buildAssetManifest()

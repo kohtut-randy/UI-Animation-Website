@@ -1,4 +1,2 @@
-/* This is a motion showcase, so full motion is the default even when an embedded
-   browser reports a reduced OS preference. The explicit URL mode remains available
-   for accessibility checks and reviewer QA. */
+// Motion showcase: full motion is the default even under OS reduced-motion; the explicit URL mode is for accessibility QA.
 export const prefersReducedMotion = (): boolean => document.documentElement.dataset.motionMode === 'reduce'

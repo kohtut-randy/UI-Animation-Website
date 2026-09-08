@@ -1,9 +1,6 @@
-/* Motion tokens. No ease, duration, stagger, ScrollTrigger offset or travel distance
-   may appear inline anywhere else in the codebase: an ESLint `no-restricted-syntax`
-   rule fails the build if one does. */
+/* Motion tokens: no ease/duration/stagger/ScrollTrigger offset/travel distance may appear inline elsewhere (ESLint enforces it). */
 
-/* EASINGS. Each has a cubic-bezier twin in tokens.css, so a CSS hover and a GSAP
-   tween of the same gesture feel identical. */
+/* EASINGS. Each has a cubic-bezier twin in tokens.css so CSS hovers and GSAP tweens match. */
 export const EASE_OUT = 'power2.out' as const // default UI settle
 export const EASE_OUT_STRONG = 'power3.out' as const // cards, larger travel
 export const EASE_OUT_QUINT = 'power4.out' as const // display type, long travel
@@ -33,8 +30,7 @@ export const STAGGER_CARDS = 0.09
 export const STAGGER_BASE = 0.12
 export const STAGGER_LOOSE = 0.18
 
-/* SCROLLTRIGGER OFFSETS. Two named intents instead of three drifting literals
-   ('top 95%' / 'top 92%' / 'top 90%') scattered across files. */
+/* SCROLLTRIGGER OFFSETS. Named intents instead of drifting literal offsets. */
 export const SCROLL_TRIGGER_START_EARLY = 'top 95%' as const // decorative rules
 export const SCROLL_TRIGGER_START_REVEAL = 'top 88%' as const // THE default for content
 export const SCROLL_TRIGGER_START_LATE = 'top 75%' as const // heavy blocks
@@ -56,10 +52,7 @@ export const SCROLL_TRIGGER_CARD_IN_END = 'left 42%' as const
 export const SCROLL_TRIGGER_CARD_OUT_START = 'right 40%' as const
 export const SCROLL_TRIGGER_CARD_OUT_END = 'right 2%' as const
 
-/* SCRUB. Use a number, not `true`, wherever a gesture drives motion: it low-passes
-   wheel deltas so trackpad and notched wheel feel the same, AND it composes correctly
-   with Lenis. `true` is only for linear indicators. Never go above ~1: Lenis lerp and
-   scrub smoothing COMPOSE, and 2 feels rubbery. Tuning range 0.8 to 1. */
+/* SCRUB. A number low-passes wheel deltas and composes with Lenis; `true` is only for linear indicators. Stay under ~1, Lenis lerp composes with it. */
 export const SCRUB_TIGHT = 0.4
 export const SCRUB_SOFT = 0.9
 export const SCRUB_LOOSE = 1.6
@@ -68,8 +61,7 @@ export const SCRUB_LINEAR = true
 
 export const ANTICIPATE_PIN = 1
 
-/* TRAVEL (px). Small on purpose: long translate distances read as jank on 60Hz
-   mid-tier phones. */
+/* TRAVEL (px). Kept small: long translate distances read as jank on 60Hz mid-tier phones. */
 export const DISTANCE_REVEAL_Y = 28
 export const DISTANCE_REVEAL_Y_LG = 44
 export const DISTANCE_PARALLAX_Y = 18
@@ -89,28 +81,18 @@ export const REDUCED_MOTION_STAGGER = 0.02
 export const REVEAL_BATCH_INTERVAL = 0.12
 export const REVEAL_BATCH_MAX = 5
 
-/* GSAP ticker. lagSmoothing(0) disables it; these two are GSAP's own defaults, used
-   to restore it on teardown. */
+/* GSAP's own lagSmoothing defaults, used to restore it on teardown after disabling it. */
 export const GSAP_LAG_SMOOTHING_DISABLED = 0
 export const GSAP_LAG_SMOOTHING_THRESHOLD_MS = 500
 export const GSAP_LAG_SMOOTHING_ADJUSTED_MS = 33
 
-/* CUSTOM CURSOR. The trailing pointer image eases toward the real cursor position
-   instead of snapping to it. Lower = more lag/slower catch-up, matches LENIS_LERP's
-   scale (0 to 1). Hotspot and size mirror the tip position baked into public/mouse.svg
-   and public/mouse_ac.svg (both rotated -25deg around a 256x256 viewBox, tip at (128,0)). */
+/* CUSTOM CURSOR. Lower CURSOR_LERP = more lag. Hotspot matches the tip baked into public/mouse*.svg. */
 export const CURSOR_LERP = 0.12
 export const CURSOR_SIZE = 30
 export const CURSOR_HOTSPOT_X = 9
 export const CURSOR_HOTSPOT_Y = 1
 
-/* THE FPS GUARD. Second stage of the two-stage degradation strategy: the pre-paint tier
-   probe in index.html catches devices that are predictably slow, and this catches the
-   ones that turn out to be slow in practice (a hot phone, a busy tab, a cheap GPU).
-
-   Sampling is deliberately coarse. The guard is a heuristic that switches decorative
-   loops off, so a false positive costs a little polish and a false negative costs
-   frames. It is biased toward switching things off. */
+/* FPS GUARD: second degradation stage after index.html's pre-paint tier probe, catches devices that turn out slow in practice. */
 export const FPS_BUDGET = 50 // below this for FPS_STRIKES windows and decoration stops
 export const FPS_SAMPLE_WINDOW_MS = 1000
 export const FPS_STRIKES = 2

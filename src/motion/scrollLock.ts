@@ -1,29 +1,18 @@
 import { DATA_ATTRIBUTE_REVEALED } from 'constants/index'
 
-/* One lock, two drivers.
-
-   There are NOT two competing lock mechanisms here. This module owns the lock, adopts
-   the pre-bundle `overflow: hidden` that index.html already set rather than
-   duplicating it, and lets Lenis register as an extra driver once it exists.
-
-   Both drivers are needed and neither alone is enough. `overflow: hidden` is the only
-   thing that works before the bundle parses, when Lenis does not exist. `lenis.stop()`
-   is the only thing that stops Lenis' VIRTUAL scroll: with Lenis running, overflow
-   alone does not stop it accumulating wheel deltas, which then jump on unlock. */
+/* One lock, two drivers: adopts index.html's pre-bundle `overflow: hidden`, then Lenis registers as an extra driver once it exists. Both are needed: overflow works before the bundle parses, `lenis.stop()` is the only thing that stops Lenis' virtual scroll. */
 
 export type ScrollLockDriver = { stop: () => void; start: () => void }
 
 let driver: ScrollLockDriver | null = null
 
-// Adopt whatever the inline script already did. This is the line that makes it one
-// mechanism instead of two: the module reads the existing state rather than assuming.
+// Adopts whatever the inline script already did, so this is one mechanism, not two.
 let locked = document.documentElement.style.overflow === 'hidden'
 
 export const isScrollLocked = (): boolean => locked
 
 /**
- * Lenis registers here. A driver arriving mid-lock inherits the lock, so Lenis starts
- * stopped during the preloader with no extra call site.
+ * Lenis registers here. A driver arriving mid-lock inherits the lock, so it starts stopped during the preloader with no extra call site.
  */
 export const registerScrollLockDriver = (next: ScrollLockDriver | null): void => {
   driver = next

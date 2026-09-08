@@ -9,9 +9,7 @@ import 'styles/index.css'
 const container = document.getElementById(ELEMENT_ID_ROOT)
 if (!container) throw new Error(`#${ELEMENT_ID_ROOT} is missing from index.html`)
 
-/* Order matters. initMotion sets GSAP defaults and ScrollTrigger config, so it has to
-   run before any component builds a timeline. startBoot runs after render, because the
-   manifest waits on React having committed and painted. */
+// Order matters: initMotion sets GSAP defaults before any component builds a timeline; startBoot runs after render since the manifest waits on paint.
 initMotion()
 
 createRoot(container).render(

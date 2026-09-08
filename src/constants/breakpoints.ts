@@ -1,10 +1,4 @@
-/* The only place breakpoint numbers exist in TypeScript. They mirror Tailwind v4's own
-   `md` and `lg` defaults, which already are the boundaries the brief asks for.
-
-   Note the media-query rem gotcha both projects rely on: `rem` inside a media query
-   always resolves against the browser's initial 16px root size, never the fluid
-   `html { font-size }`. So --breakpoint-md: 48rem is 768px at every root size, and
-   these px values stay in step with the CSS while the type scale is fluid. */
+/* Mirrors Tailwind v4's md/lg breakpoints; px stays fixed because rem in a media query ignores the fluid html font-size. */
 export const BREAKPOINT_TABLET_PX = 768 // === --breakpoint-md: 48rem
 export const BREAKPOINT_DESKTOP_PX = 1024 // === --breakpoint-lg: 64rem
 

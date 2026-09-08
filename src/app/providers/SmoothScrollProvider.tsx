@@ -5,13 +5,7 @@ import { acquireSmoothScroll, releaseSmoothScroll } from 'motion/smoothScroll'
 
 export type SmoothScrollProviderProps = { children: ReactNode }
 
-/* SINGLE RESPONSIBILITY: the Lenis lifecycle. Nothing else lives here. No
-   ScrollTrigger refresh, no phase-driven animation, no reveal setup: those are their
-   own providers.
-
-   Lenis is created after the 'ready' phase, not on mount, for two reasons: it keeps the
-   chunk out of the critical path during the preloader, and the scroll lock is still on
-   until 'ready', so an instance created earlier would spend its whole life stopped. */
+/* SINGLE RESPONSIBILITY: the Lenis lifecycle. Created after 'ready', not on mount, to keep the chunk out of the critical path and because the scroll lock is on until then. */
 export const SmoothScrollProvider = ({ children }: SmoothScrollProviderProps) => {
   useEffect(() => {
     let release: (() => void) | null = null

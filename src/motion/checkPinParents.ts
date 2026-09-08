@@ -1,11 +1,4 @@
-/* ScrollTrigger pins with `position: fixed`. Any transform, filter, backdrop-filter,
-   will-change or contain on an ancestor creates a containing block, and a fixed child
-   then positions against THAT instead of the viewport. The pin does not error, it just
-   silently drifts, which is one of the most expensive bugs in this codebase to find by
-   eye.
-
-   So it is asserted instead. This runs in dev only and names the exact offending
-   element and property. */
+/* transform/filter/backdrop-filter/will-change/contain on a pin ancestor creates a containing block, silently breaking the fixed pin. Dev-only assertion. */
 
 const CONTAINING_BLOCK_PROPS = ['transform', 'filter', 'backdropFilter', 'perspective', 'contain', 'willChange'] as const
 

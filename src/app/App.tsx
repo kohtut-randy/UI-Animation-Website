@@ -6,14 +6,10 @@ import { SmoothScrollProvider } from 'app/providers/SmoothScrollProvider'
 import { Hero } from 'features/hero'
 import { Wall } from 'features/wall'
 
-/* One provider per responsibility, deliberately not merged. The Lenis lifecycle, the
-   frame-rate guard, the refresh policy and the reveal system each mount and unmount
-   independently, so a change to one cannot disturb the others.
-
-   No wrapper here sets transform, filter, backdrop-filter, will-change or contain. That
-   is a hard constraint, not a style choice: any of them on an ancestor of the pinned
-   section would create a containing block and silently break the pin's position: fixed.
-   motion/checkPinParents.ts asserts it in dev. */
+/* One provider per responsibility, deliberately not merged. No wrapper here sets
+   transform/filter/backdrop-filter/will-change/contain: that would create a
+   containing block above the pinned section and break its fixed pin (asserted in dev
+   by motion/checkPinParents.ts). */
 export const App = () => (
   <SmoothScrollProvider>
     <FpsGuardProvider>

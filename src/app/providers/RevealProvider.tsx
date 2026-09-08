@@ -5,13 +5,7 @@ import { initReveals } from 'motion/reveal'
 
 export type RevealProviderProps = { children: ReactNode }
 
-/* SINGLE RESPONSIBILITY: stand up the one batched reveal system, over the whole tree.
-
-   It waits for the 'ready' phase before initialising. That is not a delay for its own
-   sake: ScrollTrigger.batch measures every [data-reveal] element when it is created, so
-   creating it earlier would measure a page that is still locked and not laid out, and
-   every trigger position would be wrong. 'ready' is precisely the moment layout is
-   final and the page is unlocked but still hidden behind the curtain. */
+/* Waits for 'ready' before initialising: ScrollTrigger.batch measures every [data-reveal] element on creation, and 'ready' is the first moment layout is final and unlocked (still behind the curtain). */
 export const RevealProvider = ({ children }: RevealProviderProps) => {
   const scope = useRef<HTMLDivElement>(null)
 
@@ -28,9 +22,7 @@ export const RevealProvider = ({ children }: RevealProviderProps) => {
     }
   }, [])
 
-  /* display: contents so this wrapper is invisible to layout. It exists only to give
-     initReveals a scope element, and a real box here would sit between <body> and
-     <main> and could become a containing block above the pinned section. */
+  /* display: contents keeps this wrapper invisible to layout so it cannot become a containing block above the pinned section. */
   return (
     <div ref={scope} className='contents'>
       {children}

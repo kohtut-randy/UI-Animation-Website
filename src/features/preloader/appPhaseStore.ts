@@ -1,18 +1,8 @@
 import { EVENT_PHASE_PREFIX } from 'constants/index'
 import type { AppPhase } from 'shared/types'
 
-/* An external store rather than an event, for one specific reason: a `once: true`
-   event listener is wrong here, because a component that mounts AFTER the event fires
-   would never learn about it and its entrance timeline would never play. `onAppPhase`
-   fires immediately when the phase has already been reached, which removes the
-   mount-order race entirely instead of making it unlikely.
-
-   Two phases, not one, is the other key decision:
-     'ready'   layout is final, MEASURE now (ScrollTrigger.refresh)
-     'entered' you are visible, ANIMATE now (play entrance timelines)
-   Conflating them is what forces a magic setTimeout, because ScrollTrigger has to
-   measure a laid-out, unlocked page BEFORE the entrance plays, and the entrance must
-   not run behind an opaque curtain. */
+/* External store, not an event: `onAppPhase` fires immediately if the phase was already reached, so a late-mounting component's entrance timeline is never missed.
+   Two phases, not one: 'ready' (layout final, MEASURE) and 'entered' (visible, ANIMATE) — conflating them would force a magic setTimeout between measuring and animating. */
 
 const PHASE_ORDER: readonly AppPhase[] = ['loading', 'ready', 'entered']
 

@@ -1,5 +1,4 @@
-/* A quiet frame for the story. There is no fake site navigation because the brief asks
-   for one page and no real navigation. */
+// Quiet frame for the story; no fake nav since the brief is one page with no real navigation.
 export const Header = () => (
   <header className='absolute inset-x-0 top-0 z-30'>
     <div className='gutter flex items-center justify-between py-6 md:py-8'>

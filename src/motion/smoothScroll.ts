@@ -21,28 +21,9 @@ import { getDeviceTier, prefersReducedMotion } from 'shared/lib'
 import { gsap, ScrollTrigger } from './gsapClient'
 import { registerScrollLockDriver } from './scrollLock'
 
-/* Lenis, wired to gsap.ticker, StrictMode-safe.
+/* Lenis, wired to gsap.ticker, StrictMode-safe. No scrollerProxy/ScrollSmoother/Locomotive (all force pinType: 'transform', which breaks fixed-position pin children) and no ScrollTrigger.normalizeScroll() (fights Lenis for the same wheel/touch events).
 
-   WHY NOT scrollerProxy. scrollerProxy exists for smooth scrollers that TRANSFORM A
-   WRAPPER element (Locomotive's default), or for a Lenis instance given a custom
-   wrapper/content. Default Lenis drives real window.scrollY, so ScrollTrigger's normal
-   window scroller already reads correct values. Adding scrollerProxy would mean
-   re-implementing scrollTop, getBoundingClientRect and pinType by hand for no benefit,
-   and it risks forcing pinType: 'transform', which is materially worse for the pinned
-   wall (a transformed pin container breaks position: fixed children).
-
-   WHY NOT ScrollSmoother or Locomotive. Both transform a wrapper, which forces
-   pinType: 'transform' and breaks fixed pinning for the same reason.
-
-   WHY NOT ScrollTrigger.normalizeScroll(). It hijacks the same wheel and touch events
-   Lenis owns. Enabling both is the single most common Lenis-plus-GSAP failure report.
-
-   FOUR DEFENCES AGAINST STRICTMODE DOUBLE-INVOCATION, all needed together:
-     the module singleton   two Lenis instances double-apply wheel deltas, so the page
-                            scrolls at 2x, which is the classic symptom
-     the refcount           mount/unmount/mount is 1 -> 0 -> 1, teardown only at 0
-     the deferred teardown  the synchronous pair never actually destroys and rebuilds
-     async cancellation     cleanup can run before import('lenis') resolves */
+   Double-invocation defences: module singleton (two instances would double-apply wheel deltas), a refcount (mount/unmount/mount is 1->0->1, teardown only at 0), a deferred teardown, and async cancellation for a cleanup that runs before import('lenis') resolves. */
 
 let instance: Lenis | null = null
 let refCount = 0
@@ -51,11 +32,7 @@ let scheduledTeardown = 0
 
 export const getLenis = (): Lenis | null => instance
 
-/**
- * Three conditions, and each one removes bytes as well as behaviour: reduced motion and
- * low-tier devices and phones never even download the Lenis chunk, because the dynamic
- * import sits after this guard.
- */
+/** Reduced motion, low-tier devices and phones never even download the Lenis chunk: the dynamic import sits after this guard. */
 export const shouldUseSmoothScroll = (): boolean =>
   !prefersReducedMotion() && getDeviceTier() === 'high' && window.matchMedia(MEDIA_QUERY_CAN_PIN).matches
 
@@ -92,31 +69,22 @@ export const acquireSmoothScroll = async (): Promise<() => void> => {
   }
   lenis.on('scroll', onLenisScroll)
 
-  /* 2 - ONE rAF for the entire app: GSAP's ticker drives Lenis. This is what puts
-     scroll and tweens on the same clock, and it is what stops the pinned scrub
-     micro-jittering: two independent rAF loops sample at slightly different times, so
-     the track's transform and the scroll position disagree by a fraction of a frame. */
+  // 2 - One rAF for the app: GSAP's ticker drives Lenis, keeping scroll and tweens on the same clock (avoids pinned-scrub micro-jitter from two independent rAF loops).
   const onTick = (time: number): void => {
     lenis.raf(time * LENIS_MS_PER_SECOND)
   }
   gsap.ticker.add(onTick)
 
-  /* 3 - Kill lag smoothing. After a long task GSAP would otherwise fabricate a
-     catch-up delta, desyncing Lenis from ScrollTrigger, which is visible as the pinned
-     track snapping. */
+  // 3 - Kill lag smoothing: otherwise GSAP fabricates a catch-up delta after a long task, desyncing Lenis from ScrollTrigger.
   gsap.ticker.lagSmoothing(GSAP_LAG_SMOOTHING_DISABLED)
 
-  /* 4 - Lenis must be re-measured immediately BEFORE every refresh, never after: its
-     scroll limit has to be correct before ScrollTrigger derives positions from it.
-     Registered once, here, so no call site can get the order wrong and lenis.resize()
-     is never called by hand anywhere else. */
+  // 4 - Re-measure Lenis immediately before every refresh (never after); registered once so no call site can get the order wrong.
   const onRefreshInit = (): void => {
     lenis.resize()
   }
   ScrollTrigger.addEventListener('refreshInit', onRefreshInit)
 
-  /* 5 - Hand Lenis to the single-sourced scroll lock. It inherits the current lock
-     state, so it starts stopped during the preloader with no extra call site. */
+  // 5 - Hand Lenis to the single-sourced scroll lock; it inherits the current lock state.
   registerScrollLockDriver({ stop: () => lenis.stop(), start: () => lenis.start() })
   ScrollTrigger.refresh()
 

@@ -13,16 +13,7 @@ import {
 import { gsap, ScrollTrigger } from './gsapClient'
 import { addMotionMedia, motionMedia } from './motionMedia'
 
-/* ONE batch for every [data-reveal] element on the page.
-
-   ScrollTrigger.batch collects elements whose triggers fire within `interval` seconds
-   of each other and animates them as a group, so a page with forty reveals creates one
-   batch rather than forty independent triggers, and neighbouring elements stagger
-   together instead of each popping on its own schedule.
-
-   `once: true` is deliberate: a reveal that replays on every scroll-back is a
-   distraction, and killing the trigger after it fires leaves the page with no live
-   scroll listeners for content that has already been read. */
+/* One ScrollTrigger.batch for every [data-reveal] element: neighbours stagger together instead of firing on independent triggers. `once: true` since a reveal that replays on scroll-back is a distraction. */
 
 const REVEAL_SELECTOR = '[data-reveal]'
 const DISTANCE_ATTRIBUTE = 'revealDistance'
@@ -30,13 +21,7 @@ const DISTANCE_ATTRIBUTE = 'revealDistance'
 const distanceFor = (element: HTMLElement): number =>
   element.dataset[DISTANCE_ATTRIBUTE] === 'lg' ? DISTANCE_REVEAL_Y_LG : DISTANCE_REVEAL_Y
 
-/**
- * Registers the reveal system. Returns a teardown.
- *
- * Reduced motion is handled inside the same gsap.matchMedia contract every section hook
- * uses, so it cannot be forgotten here either: the reduce branch fades opacity only,
- * with no travel and a fifth of the duration.
- */
+/** Registers the reveal system; reduced motion fades opacity only, no travel, via the shared gsap.matchMedia contract. */
 export const initReveals = (scope: Element): (() => void) => {
   const media = motionMedia()
 
@@ -45,8 +30,7 @@ export const initReveals = (scope: Element): (() => void) => {
     if (elements.length === 0) return
 
     if (flags.reduce) {
-      /* No triggers at all in this branch. Content is simply present, faded in once,
-         which is both the accessible answer and strictly less work. */
+      // Accessible answer and strictly less work: content just fades in once, no triggers.
       gsap.to(elements, { autoAlpha: 1, duration: REDUCED_MOTION_DURATION, ease: REDUCED_MOTION_EASE })
       return
     }
@@ -55,10 +39,7 @@ export const initReveals = (scope: Element): (() => void) => {
     // before the first paint, and CSS cannot express the per-element distance.
     elements.forEach(element => gsap.set(element, { y: distanceFor(element) }))
 
-    /* Correctness does not depend on a callback being throttled: initMotion leaves
-       ScrollTrigger's `limitCallbacks` off precisely so this onEnter still fires when
-       the scroll position jumps past the whole trigger in one tick (a deep link, a
-       find-in-page jump). See the note in motion/initMotion.ts. */
+    /* limitCallbacks stays off (see motion/initMotion.ts) so onEnter still fires when scroll jumps past the whole trigger in one tick. */
     ScrollTrigger.batch(elements, {
       interval: REVEAL_BATCH_INTERVAL,
       batchMax: REVEAL_BATCH_MAX,

@@ -1,17 +1,6 @@
 import { cn } from 'shared/lib'
 
-/* Kinetic display type: each line rises out of its own clipped box.
-
-   The lines are REACT-RENDERED SPANS, not GSAP SplitText. That is the load-bearing
-   choice. SplitText measures the laid-out text and injects wrappers, so it has to
-   re-split on every resize and on every font swap, and each re-split throws away the
-   elements any live tween is holding a reference to. Passing the lines in as data
-   means the DOM is stable for the life of the page: a resize changes where the lines
-   wrap visually, never how many elements exist.
-
-   The cost, stated honestly: line breaks are authored rather than measured, so they are
-   chosen per breakpoint by the caller instead of being automatic. For three headlines
-   that is a better trade than a resize-fragile split, and it also drops a plugin. */
+/* Kinetic display type: each line rises out of its own clipped box. Lines are React-rendered spans, not GSAP SplitText, so the DOM stays stable across resizes/font swaps instead of being re-split (and losing any live tween's reference). Trade-off: line breaks are authored per breakpoint, not measured. */
 
 export type RevealTextProps = {
   /** One entry per line. Authored, not measured. */

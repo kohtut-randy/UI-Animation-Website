@@ -1,11 +1,7 @@
 import { CURSOR_HOTSPOT_X, CURSOR_HOTSPOT_Y, CURSOR_LERP, CURSOR_SIZE } from 'constants/index'
 import { gsap } from './gsapClient'
 
-/* Replaces the static CSS `cursor: url(...)` with an <img> that eases toward the real
-   pointer position on gsap.ticker, the app's single rAF loop. Swaps art on
-   pointerdown/up for a pressed state. The CSS cursor in base.css is left in place as
-   the fallback: it is what renders for touch input, reduced motion and the instant
-   before this starts. */
+/* <img> eased toward the pointer on gsap.ticker; base.css's `cursor: url()` is the fallback. */
 
 let stopTicker: (() => void) | null = null
 

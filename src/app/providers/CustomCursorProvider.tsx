@@ -6,12 +6,7 @@ import { prefersReducedMotion } from 'shared/lib'
 
 export type CustomCursorProviderProps = { children: ReactNode }
 
-/* SINGLE RESPONSIBILITY: the trailing custom cursor's lifecycle.
-
-   Skipped entirely on reduced motion (the CSS cursor in base.css is already the
-   right, static, fallback) and on coarse/no pointers (touch has no cursor to trail).
-   Started at 'ready', same as the smooth scroll: before that the page is behind the
-   curtain and the lock has pointer events suppressed anyway. */
+/* Skips reduced motion and coarse/touch pointers; starts at 'ready' like the smooth scroll. */
 export const CustomCursorProvider = ({ children }: CustomCursorProviderProps) => {
   useEffect(() => {
     if (prefersReducedMotion() || !window.matchMedia('(pointer: fine)').matches) return

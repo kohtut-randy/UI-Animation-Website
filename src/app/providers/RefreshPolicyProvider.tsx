@@ -4,9 +4,7 @@ import { initRefreshPolicy } from 'motion/refresh'
 
 export type RefreshPolicyProviderProps = { children: ReactNode }
 
-/* SINGLE RESPONSIBILITY: register the ScrollTrigger refresh triggers, once. Nothing
-   else lives here, and in particular no Lenis lifecycle and no reveal setup: those are
-   their own providers, so a change to one cannot disturb the other. */
+/* SINGLE RESPONSIBILITY: registers the ScrollTrigger refresh triggers, once; no Lenis lifecycle, no reveal setup here. */
 export const RefreshPolicyProvider = ({ children }: RefreshPolicyProviderProps) => {
   useEffect(() => initRefreshPolicy(), [])
 

@@ -14,14 +14,7 @@ export type HoldCardProps = {
   className?: string
 }
 
-/* One problem on the wall. Presentation only: it takes primitives, knows nothing about
-   the dataset it came from, and holds no state.
-
-   Every hover effect here is a CSS transition on transform, opacity or colour, on its
-   own element. That keeps them compositor-driven, keeps them working with no listeners
-   attached, and guarantees GSAP never animates a property that also has a CSS
-   transition on it. The per-card scrubbed emphasis tween in useWallMotion targets
-   [data-card-emphasis], a different element from anything hovered here. */
+/* One problem on the wall: presentation only, no state. Every hover here is a CSS transition on its own element (compositor-driven, works pre-hydration). The scrubbed emphasis tween in useWallMotion targets [data-card-emphasis], a different element. */
 
 export const HoldCard = ({ index, name, grade, color, shape, setter, zone, note, className }: HoldCardProps) => (
   <article
@@ -33,8 +26,7 @@ export const HoldCard = ({ index, name, grade, color, shape, setter, zone, note,
       className,
     )}
   >
-    {/* A brand wash that only appears on hover. Opacity on a dedicated absolute layer,
-        so nothing here repaints the card's own background. */}
+    {/* Brand wash on hover: opacity on its own absolute layer so nothing repaints the card's background. */}
     <div
       aria-hidden='true'
       className='pointer-events-none absolute inset-0 bg-[radial-gradient(120%_80%_at_80%_0%,var(--color-jug-500)_0%,transparent_60%)] opacity-0 transition-opacity duration-(--duration-base) group-hover:opacity-[0.09]'

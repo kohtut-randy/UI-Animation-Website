@@ -1,29 +1,10 @@
 import { cn } from 'shared/lib'
 import type { HoldColor, HoldShape } from 'shared/types'
 
-/* A climbing hold: hand-authored blob SVG, no stock art and no icon library.
-
-   THE FOUR-LAYER RULE, which is the whole reason this component exists as nested
-   elements rather than one node. Three separate systems want to write `transform` on a
-   hold, and CSS gives each element exactly one transform, so they would overwrite each
-   other:
-
-     layer 1  [data-hold-parallax]  scroll parallax, scrubbed y
-     layer 2  [data-hold-float]     idle float loop, yoyo y, registered in motion/decor
-     layer 3  [data-hold-magnet]    pointer magnetism, gsap.quickTo x and y, desktop only
-     layer 4  the <svg>             the art, static, never animated
-
-   Each layer owns one transform and one owner. That is why parallax does not cancel the
-   float, and why the magnet can be attached and detached per breakpoint without
-   touching either. Collapsing these into one element is the tempting simplification
-   that makes all three systems fight. */
+/* A climbing hold: hand-authored blob SVG. Four nested layers, each owning its own CSS transform so they can't overwrite each other: [data-hold-parallax] scroll parallax, [data-hold-float] idle loop, [data-hold-magnet] pointer magnetism (desktop only), and the static <svg> art. */
 
 const SHAPE_PATHS: Record<HoldShape, string> = {
-  /* Deliberately lumpy: a real bouldering hold is an asymmetric blob with fat lobes and
-     pinched edges, not a circle. Each silhouette was built from eight anchors at
-     varied radii, smoothed through them, so the bumps are real geometry rather than a
-     slightly squashed ellipse. Hand-tuned curves kept collapsing back to ovals, which
-     is what these replace. */
+  // Deliberately lumpy: hand-tuned asymmetric blobs, not circles — plain ovals kept being the accidental result.
   'blob-a':
     'M154 80C155.5 94.8 137.4 109.5 126.1 121.5C114.8 133.4 99.8 152.2 86.3 151.7C72.8 151.3 57.9 129.8 45.2 118.6C32.5 107.5 12.3 96.9 10.2 84.9C8.1 72.9 22.6 59.8 32.5 46.7C42.4 33.7 55.6 9.1 69.7 6.7C83.8 4.4 102.9 20.5 116.9 32.7C131 44.9 152.5 65.2 154 80Z',
   'blob-b':
@@ -36,9 +17,7 @@ const SHAPE_PATHS: Record<HoldShape, string> = {
     'M147.7 85.9C145.8 101.2 130.5 111.6 118.8 123.1C107.1 134.6 91.3 155.4 77.4 155C63.5 154.5 47 133.1 35.4 120.1C23.9 107.2 8.9 93.3 8 77.5C7.2 61.6 18.2 34.2 30.5 25C42.8 15.8 65.4 21 82 22C98.7 23.1 119.4 20.7 130.4 31.4C141.3 42 149.7 70.6 147.7 85.9Z',
 }
 
-/* Two ramp steps per hold, so the blob reads as a lit object rather than a flat shape.
-   The literal class strings are required: Tailwind scans source text, so a
-   `fill-${color}-500` template would generate nothing at all. */
+// Two ramp steps per hold so it reads as lit; literal class strings since Tailwind scans source text, not a `fill-${color}-500` template.
 const SHAPE_FILL: Record<HoldColor, { body: string; edge: string }> = {
   crimp: { body: 'text-crimp-500', edge: 'text-crimp-600' },
   jug: { body: 'text-jug-500', edge: 'text-jug-600' },
